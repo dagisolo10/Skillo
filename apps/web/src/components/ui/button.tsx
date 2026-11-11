@@ -3,15 +3,15 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "cn";
 
 const buttonVariants = cva(
-    "group/button cursor-pointer inline-flex shrink-0 items-center justify-center font-mono font-bold uppercase tracking-wider select-none outline-none transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+    "group/button cursor-pointer inline-flex shrink-0 items-center duration-300 justify-center font-bold tracking-wider select-none outline-none transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
     {
         variants: {
             variant: {
-                outline: "bg-card text-foreground hover:bg-muted",
+                outline: "bg-card text-foreground hover:bg-muted shadow-neo active-sink",
                 destructive: "bg-red-500 text-white hover:bg-red-600 shadow-neo active-sink",
                 ghost: "border-transparent bg-transparent hover:bg-muted hover:text-foreground",
-                default: "bg-primary text-foreground hover:bg-primary/90 shadow-neo active-sink",
-                secondary: "bg-secondary text-foreground hover:bg-secondary/90 shadow-neo active-sink",
+                default: "bg-primary text-foreground hover:bg-primary/70 shadow-neo active-sink",
+                secondary: "bg-secondary text-foreground hover:bg-secondary/70 shadow-neo active-sink",
                 link: "border-transparent bg-transparent text-primary underline-offset-4 hover:underline",
             },
             size: {

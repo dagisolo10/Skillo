@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { useSignInForm } from "@/hooks/custom/use-sign-in-form";
 import { useSignUpForm } from "@/hooks/custom/use-sign-up-form";
 import { cn } from "cn";
-import { Check, Eye, EyeOff, Loader2, X } from "lucide-react";
+import { ArrowRight, Check, Eye, EyeOff, Loader2, X } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Suspense, useState } from "react";
@@ -111,7 +111,7 @@ function SignInForm() {
 
                 <Button type="submit" disabled={isSubmitting} className="group mt-2 w-full font-black tracking-wider uppercase">
                     {isSubmitting ? "Processing..." : "Sign In "}
-                    <span className="inline-block transition-all duration-300 group-hover:translate-x-2">→</span>
+                    <ArrowRight className="size-4 transition-transform duration-300 group-hover/button:translate-x-2" />
                 </Button>
             </form>
         </div>
@@ -219,7 +219,7 @@ function SignUpForm() {
 
                 <Button type="submit" disabled={isSubmitting || !usernameAvailableQuery.data} className="group mt-2 w-full font-black tracking-wider uppercase">
                     {isSubmitting ? "Processing..." : "Create Account "}
-                    <span className="inline-block transition-all duration-300 group-hover:translate-x-2">→</span>
+                    <ArrowRight className="size-4 transition-transform duration-300 group-hover/button:translate-x-2" />
                 </Button>
             </form>
         </div>

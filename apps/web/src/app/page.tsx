@@ -2,8 +2,9 @@
 
 import { RelativeTime } from "@/components/auth/relative-time";
 import Navbar from "@/components/navbar";
-import { SkillCard } from "@/components/skills/skill-card";
-import { SKILLS } from "@/lib/mock/data";
+import { SkillCard, SkillCardSkeleton } from "@/components/skills/skill-card";
+import { Button } from "@/components/ui/button";
+import { useGetSkills } from "@/hooks/tan-stack/skill";
 import { cn } from "cn";
 import { ArrowRight, ArrowUpRight, Zap } from "lucide-react";
 import Link from "next/link";
@@ -20,11 +21,13 @@ const STEPS = [
 ];
 
 export default function LandingPage() {
-    const [selectedCategory, setSelectedCategory] = useState("All");
-    const skills = SKILLS.slice(0, 6);
-    const categories = [...new Set(skills.map(({ category }) => category)), "All"];
+    const [category, setCategory] = useState("All");
+    const limit = 3;
 
-    const filtered = selectedCategory === "All" ? skills : skills.filter(({ category }) => category === selectedCategory);
+    const allSkillsQuery = useGetSkills({ limit });
+    const skillsQuery = useGetSkills({ limit, category });
+
+    const categories = ["All", ...new Set(allSkillsQuery.items.map(({ category }) => category))];
 
     return (
         <div className="relative">
@@ -44,12 +47,16 @@ export default function LandingPage() {
                     </p>
 
                     <div className="flex flex-col items-center justify-center gap-4 pt-4 sm:flex-row">
-                        <Link href="/auth" className="group bg-primary shadow-neo active-sink flex items-center gap-2 px-8 py-4 text-lg font-bold">
-                            <span>Get Started Free</span>
-                            <span className="transition-transform duration-300 group-hover:translate-x-2">→</span>
+                        <Link href="/auth">
+                            <Button className="h-auto py-4 font-bold" size={"lg"}>
+                                Get Started Free <ArrowRight className="size-4 transition-transform duration-300 group-hover/button:translate-x-2" />
+                            </Button>
                         </Link>
-                        <Link href="/skills" className="bg-card shadow-neo active-sink hover:bg-muted px-8 py-4 text-lg font-bold transition-colors">
-                            Explore Marketplace
+
+                        <Link href="/skills">
+                            <Button className="h-auto py-4 font-bold" size={"lg"} variant={"outline"}>
+                                Explore Marketplace
+                            </Button>
                         </Link>
                     </div>
                 </section>
@@ -76,48 +83,56 @@ export default function LandingPage() {
                         <div>
                             <h2 className="font-clash text-3xl font-black">LIVE SKILL BOARD</h2>
                             <p className="text-muted-foreground font-medium">
-                                Browse what peers are currently offering on Skillo{filtered.length ? ` — ${filtered.length} teachable skills and counting` : ""}.
+                                Browse what peers are currently offering on Skillo{skillsQuery.items.length ? ` — ${skillsQuery.items.length} teachable skills and counting` : ""}.
                             </p>
                         </div>
 
-                        <div className="flex flex-wrap gap-2">
-                            {categories.map((cat) => (
-                                <button
-                                    key={cat}
-                                    onClick={() => setSelectedCategory(cat)}
-                                    className={cn(
-                                        "cursor-pointer px-3 py-1 text-xs font-bold transition-transform",
-                                        selectedCategory === cat ? "bg-primary shadow-neo -translate-x-px -translate-y-px" : "bg-card shadow-neo-sm hover:bg-muted active-sink-sm",
-                                    )}
-                                >
-                                    {cat}
-                                </button>
-                            ))}
-                        </div>
+                        {categories.length && (
+                            <div className="flex flex-wrap gap-2">
+                                {categories.map((cat) => (
+                                    <button
+                                        key={cat}
+                                        onClick={() => setCategory(cat)}
+                                        className={cn(
+                                            "cursor-pointer px-3 py-1 text-xs font-bold transition-transform",
+                                            category === cat ? "bg-primary shadow-neo -translate-x-px -translate-y-px" : "bg-card shadow-neo-sm hover:bg-muted active-sink-sm",
+                                        )}
+                                    >
+                                        {cat}
+                                    </button>
+                                ))}
+                            </div>
+                        )}
                     </div>
 
                     <div className="mx-auto max-w-7xl">
-                        {filtered.length === 0 ? (
+                        {skillsQuery.isPending ? (
+                            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+                                {Array.from({ length: limit }).map((_, i) => (
+                                    <SkillCardSkeleton key={i} />
+                                ))}
+                            </div>
+                        ) : skillsQuery.items.length === 0 ? (
                             <div className="bg-card shadow-neo mx-auto max-w-md space-y-2 p-10 text-center">
                                 <span className="text-4xl">🗂️</span>
-                                <p className="font-clash text-xl font-black">Nothing in {selectedCategory} yet</p>
+                                <p className="font-clash text-xl font-black">Nothing in {category} yet</p>
                                 <p className="text-muted-foreground font-mono text-xs">Pick another category or browse everything.</p>
                             </div>
                         ) : (
-                            <>
-                                <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-                                    {filtered.slice(0, 9).map((skill) => (
-                                        <SkillCard key={skill.id} skill={skill} />
-                                    ))}
-                                </div>
-
-                                <div className="mt-8 flex justify-center">
-                                    <Link href="/skills" className="bg-primary shadow-neo active-sink hover:bg-primary/90 flex items-center gap-2 px-6 py-3 text-sm font-bold transition-colors">
-                                        View the full marketplace <ArrowRight size={16} />
-                                    </Link>
-                                </div>
-                            </>
+                            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+                                {skillsQuery.items.map((skill) => (
+                                    <SkillCard key={skill.id} skill={skill} />
+                                ))}
+                            </div>
                         )}
+                    </div>
+
+                    <div className="mt-8 flex justify-center">
+                        <Link href="/skills">
+                            <Button className="px-6 text-sm">
+                                View the full marketplace <ArrowRight className="size-4 transition-transform duration-300 group-hover/button:translate-x-2" />
+                            </Button>
+                        </Link>
                     </div>
                 </section>
 
@@ -130,11 +145,11 @@ export default function LandingPage() {
                         <Zap size={18} /> Join the P2P skill network today. Set up your profile, list your craft, and claim your starter credits.
                     </p>
 
-                    <div className="pt-2">
-                        <Link href="/auth" className="bg-card shadow-neo active-sink hover:bg-muted inline-block px-8 py-4 text-lg font-black transition-colors">
-                            Create Free Account →
-                        </Link>
-                    </div>
+                    <Link href="/auth">
+                        <Button className="h-auto py-4 text-sm font-bold uppercase" variant={"outline"} size={"lg"}>
+                            Create Free Account <ArrowRight className="size-4 transition-transform duration-300 group-hover/button:translate-x-2" />
+                        </Button>
+                    </Link>
                 </section>
 
                 <footer className="bg-card border-foreground mt-20 w-full border-t-4">
@@ -148,18 +163,13 @@ export default function LandingPage() {
                                 <p className="text-muted-foreground max-w-sm font-mono text-xs leading-relaxed">
                                     A credit-based peer-to-peer barter network. Teach your craft, earn ledger credits, and unlock masterclass skills without cash barriers.
                                 </p>
-
-                                <div className="flex items-center gap-2 pt-2">
-                                    <span className="bg-primary shadow-neo-sm border-foreground border-2 px-2 py-0.5 font-mono text-[10px] font-black uppercase">⚡ Adama Cluster v2.4</span>
-                                    <span className="bg-secondary shadow-neo-sm border-foreground border-2 px-2 py-0.5 font-mono text-[10px] font-black uppercase">P2P Active</span>
-                                </div>
                             </div>
 
                             <div className="space-y-3">
                                 <h4 className="font-clash text-sm font-black tracking-wider uppercase">Marketplace</h4>
                                 <ul className="space-y-2 font-mono text-xs">
                                     <li>
-                                        <Link href="/explore" className="text-muted-foreground hover:text-foreground flex items-center gap-1 hover:underline">
+                                        <Link href="/skills" className="text-muted-foreground hover:text-foreground flex items-center gap-1 hover:underline">
                                             Browse Skills <ArrowUpRight size={12} />
                                         </Link>
                                     </li>

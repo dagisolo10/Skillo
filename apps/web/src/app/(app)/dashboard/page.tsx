@@ -5,15 +5,15 @@ import { Button } from "@/components/ui/button";
 import { useGetUser } from "@/hooks/tan-stack/user";
 import { User } from "@/types/models";
 import { cn } from "cn";
-import { AlertTriangle, ArrowUpRight, BookOpen, Clock, Flame, Plus, RefreshCw, ShieldCheck, Sparkles, Zap } from "lucide-react";
+import { AlertTriangle, ArrowRight, ArrowUpRight, BookOpen, Clock, Flame, Plus, RefreshCw, ShieldCheck, Sparkles, Zap } from "lucide-react";
 import Link from "next/link";
 
 interface SkillSwap {
     id: string;
-    title: string;
-    partner: string;
     seed: string;
     time: string;
+    title: string;
+    partner: string;
     type: "teaching" | "learning";
     status: "Confirmed" | "Pending Match";
 }
@@ -238,7 +238,7 @@ function DashboardContent({ user }: { user: User }) {
                             </p>
                             <Link href="/explore" className="block pt-1">
                                 <Button size="sm" className="w-full">
-                                    Browse Marketplace →
+                                    Browse Marketplace <ArrowRight className="size-4 transition-transform duration-300 group-hover/button:translate-x-2" />
                                 </Button>
                             </Link>
                         </div>
@@ -249,9 +249,6 @@ function DashboardContent({ user }: { user: User }) {
     );
 }
 
-// ==========================================
-// 3. SKELETON BLOCK (Loading State)
-// ==========================================
 function DashboardSkeleton() {
     return (
         <div className="bg-background min-h-screen w-full animate-pulse p-6 lg:p-10">
@@ -282,9 +279,6 @@ function DashboardSkeleton() {
     );
 }
 
-// ==========================================
-// 4. ERROR BLOCK (Error Handling State)
-// ==========================================
 function DashboardError({ onRetry }: { onRetry: () => void }) {
     return (
         <div className="bg-background flex h-screen w-full items-center justify-center p-6">

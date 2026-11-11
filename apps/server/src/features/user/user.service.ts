@@ -13,12 +13,6 @@ const MAX_CREATE_ATTEMPTS = 5;
 
 const RESERVED_USERNAMES = new Set(["admin", "api", "support", "help", "root", "system", "skillo", "moderator", "null", "undefined"]);
 
-const authMetadataSchema = z.object({
-    name: z.string().trim().min(1).max(80).optional().catch(undefined),
-    username: z.string().trim().max(100).optional().catch(undefined),
-    avatarSeed: z.string().trim().max(100).optional().catch(undefined),
-});
-
 function isPrismaError(error: unknown, code: string): error is Prisma.PrismaClientKnownRequestError {
     return error instanceof Prisma.PrismaClientKnownRequestError && error.code === code;
 }
@@ -135,6 +129,18 @@ export class UserService {
         if (!email) {
             throw new BadRequestException("An email address is required to create a profile");
         }
+
+        const authMetadataSchema = z.object({
+            name: z.string().trim().min(1).max(80).optional().catch(undefined),
+            username: z
+                .string()
+                .transform((val) => this.normalizeUsername(val))
+                .pipe(z.string({ error: "Username contains no valid characters" }).max(100).min(USERNAME_MIN, "Username must contain at least 3 valid alphanumeric characters"))
+                .optional()
+                .catch(undefined),
+
+            avatarSeed: z.string().trim().max(100).optional().catch(undefined),
+        });
 
         const metadata = authMetadataSchema.parse(data.user.user_metadata ?? {});
 
