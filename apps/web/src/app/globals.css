@@ -1,0 +1,250 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+    --color-background: var(--background);
+    --color-foreground: var(--foreground);
+
+    --font-sans: var(--font-plus-jakarta);
+    --font-clash: var(--font-clash-display);
+
+    --color-sidebar-ring: var(--sidebar-ring);
+    --color-sidebar-border: var(--sidebar-border);
+    --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+    --color-sidebar-accent: var(--sidebar-accent);
+    --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+    --color-sidebar-primary: var(--sidebar-primary);
+    --color-sidebar-foreground: var(--sidebar-foreground);
+    --color-sidebar: var(--sidebar);
+
+    --color-chart-5: var(--chart-5);
+    --color-chart-4: var(--chart-4);
+    --color-chart-3: var(--chart-3);
+    --color-chart-2: var(--chart-2);
+    --color-chart-1: var(--chart-1);
+
+    --color-ring: var(--ring);
+    --color-input: var(--input);
+    --color-border: var(--border);
+    --color-destructive: var(--destructive);
+    --color-destructive-foreground: var(--destructive-foreground);
+    --color-accent-foreground: var(--accent-foreground);
+    --color-accent: var(--accent);
+    --color-muted-foreground: var(--muted-foreground);
+    --color-muted: var(--muted);
+    --color-secondary-foreground: var(--secondary-foreground);
+    --color-secondary: var(--secondary);
+    --color-primary-foreground: var(--primary-foreground);
+    --color-primary: var(--primary);
+    --color-popover-foreground: var(--popover-foreground);
+    --color-popover: var(--popover);
+    --color-card-foreground: var(--card-foreground);
+    --color-card: var(--card);
+
+    --color-brand-mint: #c3e8d0;
+    --color-brand-coral: #ff5e5b;
+    --color-brand-cream: #faf7f2;
+    --color-brand-yellow: #ffde00;
+
+    --radius-sm: 0px;
+    --radius-md: 0px;
+    --radius-lg: 0px;
+    --radius-xl: 0px;
+    --radius-2xl: 0px;
+    --radius-3xl: 0px;
+    --radius-4xl: 0px;
+}
+
+:root {
+    --border-shadow: 2px;
+
+    --background: oklch(0.975 0.008 75);
+    --foreground: oklch(0 0 0);
+
+    --card: oklch(1 0 0);
+    --card-foreground: oklch(0 0 0);
+    --popover: oklch(1 0 0);
+    --popover-foreground: oklch(0 0 0);
+
+    --primary: oklch(0.9 0.19 96);
+    --primary-foreground: oklch(0 0 0);
+
+    --secondary: oklch(0.9 0.05 155);
+    --secondary-foreground: oklch(0 0 0);
+
+    --muted: oklch(0.95 0.005 75);
+    --muted-foreground: oklch(0.4 0 0);
+
+    --accent: oklch(0.92 0.08 230);
+    --accent-foreground: oklch(0 0 0);
+
+    --destructive: oklch(0.65 0.22 25);
+    --destructive-foreground: oklch(1 0 0);
+
+    --border: oklch(0 0 0);
+    --input: oklch(0 0 0);
+    --ring: oklch(0 0 0);
+
+    --chart-1: oklch(0.9 0.19 96);
+    --chart-2: oklch(0.9 0.05 155);
+    --chart-3: oklch(0.65 0.22 25);
+    --chart-4: oklch(0.85 0.12 230);
+    --chart-5: oklch(0.4 0 0);
+
+    --radius: 0px;
+
+    --sidebar: oklch(1 0 0);
+    --sidebar-foreground: oklch(0 0 0);
+    --sidebar-primary: oklch(0.9 0.19 96);
+    --sidebar-primary-foreground: oklch(0 0 0);
+    --sidebar-accent: oklch(0.95 0.005 75);
+    --sidebar-accent-foreground: oklch(0 0 0);
+    --sidebar-border: oklch(0 0 0);
+    --sidebar-ring: oklch(0 0 0);
+}
+
+@layer base {
+    * {
+        @apply border-border outline-ring/50 selection:bg-primary scroll-smooth selection:text-black;
+    }
+
+    body {
+        @apply bg-background text-foreground font-sans;
+    }
+
+    html {
+        @apply antialiased;
+    }
+}
+
+@utility shadow-neo-sm {
+    border: var(--border-shadow) solid var(--border);
+    box-shadow: 2px 2px 0px 0px var(--foreground);
+    transition:
+        transform 0.15s ease,
+        box-shadow 0.15s ease;
+}
+
+@utility shadow-neo {
+    border: var(--border-shadow) solid var(--border);
+    box-shadow: 4px 4px 0px 0px var(--foreground);
+    transition:
+        transform 0.15s ease,
+        box-shadow 0.15s ease;
+}
+
+@utility shadow-neo-lg {
+    border: var(--border-shadow) solid var(--border);
+    box-shadow: 6px 6px 0px 0px var(--foreground);
+    transition:
+        transform 0.15s ease,
+        box-shadow 0.15s ease;
+}
+
+@utility active-sink-sm {
+    &:active {
+        box-shadow: 0px 0px 0px 0px var(--foreground) !important;
+        transform: translate(2px, 2px);
+    }
+}
+
+@utility active-sink {
+    &:active {
+        box-shadow: 0px 0px 0px 0px var(--foreground) !important;
+        transform: translate(4px, 4px);
+    }
+}
+
+@utility active-sink-lg {
+    &:active {
+        box-shadow: 0px 0px 0px 0px var(--foreground) !important;
+        transform: translate(6px, 6px);
+    }
+}
+
+@keyframes marquee-up {
+    0% {
+        transform: translateY(0%);
+    }
+    100% {
+        transform: translateY(-50%);
+    }
+}
+
+@keyframes marquee-down {
+    0% {
+        transform: translateY(-50%);
+    }
+    100% {
+        transform: translateY(0%);
+    }
+}
+
+.animate-marquee-up {
+    animation: marquee-up 25s linear infinite;
+    &:hover {
+        animation-play-state: paused;
+    }
+}
+
+.animate-marquee-down {
+    animation: marquee-down 30s linear infinite;
+    &:hover {
+        animation-play-state: paused;
+    }
+}
+
+.perspective-scene {
+    perspective: 1000px;
+}
+
+.marquee-rail-tilt {
+    transform-style: preserve-3d;
+    transform: rotateX(20deg) rotateY(-15deg) rotateZ(6deg) scale(1.15);
+}
+
+@keyframes fade-in {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes modal-in {
+    from {
+        opacity: 0;
+        transform: translate(-12px, -12px);
+    }
+    to {
+        opacity: 1;
+        transform: translate(0, 0);
+    }
+}
+
+@keyframes toast-in {
+    from {
+        opacity: 0;
+        transform: translateX(16px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.animate-fade-in {
+    animation: fade-in 0.2s ease-out both;
+}
+
+.animate-modal-in {
+    animation: modal-in 0.2s ease-out both;
+}
+
+.animate-toast-in {
+    animation: toast-in 0.25s ease-out both;
+}
