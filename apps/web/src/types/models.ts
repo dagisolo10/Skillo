@@ -10,6 +10,15 @@ export type User = {
 
 export type SkillCategory = "Tech" | "Music" | "Languages" | "Design" | "Crafts" | "Wellness" | "Other";
 
+export type Skill = {
+    id: string;
+    name: string;
+    emoji: string;
+    description: string;
+    category: SkillCategory;
+    createdAt: string;
+};
+
 export type SkillDetail = {
     id: string;
     name: string;
