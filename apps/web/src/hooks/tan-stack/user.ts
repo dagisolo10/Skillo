@@ -2,8 +2,9 @@ import { queryKeys } from "@/constants/query-keys";
 import { useAuth } from "@/contexts/auth-context";
 import { api, requestApi } from "@/lib/api/axios";
 import { User } from "@/types/models";
-import { TQueryOptions } from "@/types/options";
-import { keepPreviousData, useQuery } from "@tanstack/react-query";
+import { TMutationOptions, TQueryOptions } from "@/types/options";
+import { UpdateUserPayload } from "@/types/payloads";
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 export function useGetUser(options?: TQueryOptions<User>) {
     const { user } = useAuth();
@@ -22,5 +23,18 @@ export function useIsUsernameAvailable(username: string, options?: TQueryOptions
         placeholderData: keepPreviousData,
         queryKey: queryKeys.user.username(username),
         queryFn: async () => requestApi(() => api.get<boolean>(`/user/username/${username}`)),
+    });
+}
+
+export function useUpdateUser(options?: TMutationOptions<User, UpdateUserPayload>) {
+    const qc = useQueryClient();
+
+    return useMutation({
+        ...options,
+        mutationFn: async (data) => requestApi(() => api.patch("/user", data)),
+        onSuccess(user, ...args) {
+            qc.setQueryData(queryKeys.user.me(user.id), user);
+            options?.onSuccess?.(user, ...args);
+        },
     });
 }

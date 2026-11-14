@@ -4,6 +4,7 @@ CREATE TABLE
         "id" TEXT NOT NULL,
         "name" TEXT NOT NULL,
         "username" TEXT NOT NULL,
+        "bio" TEXT,
         "email" TEXT NOT NULL,
         "avatarSeed" TEXT NOT NULL DEFAULT 'Felix',
         "credits" INTEGER NOT NULL DEFAULT 2,

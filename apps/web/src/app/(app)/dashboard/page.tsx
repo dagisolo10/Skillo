@@ -182,9 +182,7 @@ function DashboardContent({ user }: { user: User }) {
                                         <span
                                             className={cn(
                                                 "px-2.5 py-1 font-mono text-[10px] font-bold",
-                                                session.status === "Confirmed"
-                                                    ? "border border-green-500/20 bg-green-500/10 text-green-600"
-                                                    : "border border-amber-500/20 bg-amber-500/10 text-amber-600",
+                                                session.status === "Confirmed" ? "border-success/20 bg-success/10 text-success border" : "border border-amber-500/20 bg-amber-500/10 text-amber-600",
                                             )}
                                         >
                                             {session.status}

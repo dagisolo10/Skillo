@@ -33,7 +33,10 @@ export default function Navbar() {
         { label: "Sign Up", href: "/auth", primary: true },
     ];
 
-    const authLinks: NavLink[] = [{ label: "Dashboard", href: "/dashboard" }];
+    const authLinks: NavLink[] = [
+        { href: "/skills", label: "Skills" },
+        { label: "Dashboard", href: "/dashboard" },
+    ];
 
     const currentLinks = isSignedIn ? authLinks : publicLinks;
 

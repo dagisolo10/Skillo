@@ -5,9 +5,11 @@ export type User = {
     credits: number;
     username: string;
     createdAt: string;
+    bio: string | null;
     avatarSeed: string;
 };
 
+export type SkillCategoryFilter = SkillCategory | "All";
 export type SkillCategory = "Tech" | "Music" | "Languages" | "Design" | "Crafts" | "Wellness" | "Other";
 
 export type Skill = {

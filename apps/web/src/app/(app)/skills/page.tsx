@@ -1,26 +1,28 @@
 "use client";
 
-import { SkillCard, SkillCardSkeleton } from "@/components/skills/skill-card";
+import { SkillCard } from "@/components/skills/skill-card";
+import SkillCardLoading, { SkillCardSkeleton } from "@/components/skills/skills-skeleton";
 import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
+import { ErrorBlock } from "@/components/ui/error-block";
 import { Input } from "@/components/ui/input";
-import { ErrorBlock, PageHeader } from "@/components/ui/page-header";
+import { PageHeader } from "@/components/ui/page-header";
+import { CATEGORIES } from "@/constants/data";
 import useDebounce from "@/hooks/custom/use-debounce";
 import { useGetSkills } from "@/hooks/tan-stack/skill";
+import { SkillCategoryFilter } from "@/types/models";
 import { cn } from "cn";
 import { Loader2, Search, X } from "lucide-react";
 import { useState } from "react";
 
+const LIMIT = 9;
+
 export default function SkillsPage() {
     const [search, setSearch] = useState("");
-    const debouncedSearch = useDebounce(search);
-    const [category, setCategory] = useState("All");
+    const name = useDebounce(search);
+    const [category, setCategory] = useState<SkillCategoryFilter>("All");
 
-    const limit = 9;
-
-    const allSkillsQuery = useGetSkills({ limit: 20 });
-    const skillsQuery = useGetSkills({ limit, category, name: debouncedSearch });
-    const categories = ["All", ...new Set((allSkillsQuery.items ?? []).map(({ category }) => category))];
+    const skillsQuery = useGetSkills({ category, name, limit: LIMIT });
 
     return (
         <div className="bg-background min-h-screen w-full p-6 lg:p-10">
@@ -31,7 +33,7 @@ export default function SkillsPage() {
                     description="Browse skills offered by peers. Book a session, hold your credit in escrow, and start learning."
                     action={
                         <span className="text-muted-foreground font-mono text-xs font-bold">
-                            {skillsQuery.items ? `${skillsQuery.items.length} loaded skill${skillsQuery.items.length === 1 ? "" : "s"}` : "…"}
+                            {skillsQuery.items.length} loaded skill{skillsQuery.items.length === 1 ? "" : "s"}
                         </span>
                     }
                 />
@@ -46,14 +48,14 @@ export default function SkillsPage() {
                             onChange={(event) => setSearch(event.target.value)}
                             placeholder="Search skills — try 'guitar', 'rust', 'pottery'…"
                         />
-                        <button onClick={() => setSearch("")} className="text-muted-foreground absolute top-1/2 right-3 -translate-y-1/2 cursor-pointer">
+                        <button aria-label="Clear search" onClick={() => setSearch("")} className="text-muted-foreground absolute top-1/2 right-3 -translate-y-1/2 cursor-pointer">
                             <X className="text-muted-foreground/60 hover:text-muted-foreground size-4 opacity-0 transition-[colors,opacity] duration-300 group-focus-within/search:opacity-100" />
                         </button>
                     </div>
 
                     <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                         <div className="flex flex-wrap items-center gap-2">
-                            {categories.map((candidate) => (
+                            {CATEGORIES.map((candidate) => (
                                 <Button
                                     size={"sm"}
                                     key={candidate}
@@ -69,18 +71,14 @@ export default function SkillsPage() {
                 </div>
 
                 {skillsQuery.isPending ? (
-                    <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-                        {Array.from({ length: limit }).map((_, index) => (
-                            <SkillCardSkeleton key={index} />
-                        ))}
-                    </div>
-                ) : skillsQuery.isError ? (
-                    <ErrorBlock title="Failed to load marketplace" description="Could not retrieve the skill catalog." onRetry={() => skillsQuery.refetch()} />
+                    <SkillCardLoading limit={LIMIT} />
+                ) : skillsQuery.isError && (!skillsQuery.items || skillsQuery.items.length === 0) ? (
+                    <ErrorBlock title="Failed to load skills" description={skillsQuery.error.message} onRetry={() => skillsQuery.refetch()} />
                 ) : !skillsQuery.items || skillsQuery.items.length === 0 ? (
                     <EmptyState
                         emoji="🔍"
-                        title="No skills found"
-                        description="Try adjusting your filters or search query."
+                        title={name ? `No skills match "${name}"` : `No skills found in ${category}`}
+                        description="Try adjusting your category or search query."
                         action={
                             <Button
                                 onClick={() => {
@@ -103,8 +101,14 @@ export default function SkillsPage() {
                         </div>
 
                         <div className="flex flex-col items-center justify-center gap-4 pt-4">
-                            {skillsQuery.hasNextPage ? (
-                                <Button onClick={() => skillsQuery.fetchNextPage()} disabled={skillsQuery.isFetchingNextPage} className="px-6 py-3 font-bold">
+                            {skillsQuery.isFetchNextPageError ? (
+                                <ErrorBlock title="Failed to fetch the next batch of skills." description={skillsQuery.error.message} onRetry={() => skillsQuery.fetchNextPage()} />
+                            ) : skillsQuery.hasNextPage ? (
+                                <Button
+                                    onClick={() => skillsQuery.fetchNextPage()}
+                                    disabled={skillsQuery.isFetchingNextPage}
+                                    className="shadow-neo-sm active-sink-sm border-2 border-black px-6 py-3 font-bold"
+                                >
                                     {skillsQuery.isFetchingNextPage ? (
                                         <>
                                             <Loader2 className="mr-2 size-4 animate-spin" /> Fetching more...

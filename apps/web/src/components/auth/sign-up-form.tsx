@@ -2,17 +2,19 @@
 
 import { AvatarPicker } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import useDebounce from "@/hooks/custom/use-debounce";
 import { useIsUsernameAvailable } from "@/hooks/tan-stack/user";
 import { createClient } from "@/lib/supabase/client";
 import { normalizeUsername, slugifyUsername, USERNAME_MIN } from "@/utils/helper-functions";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { cn } from "cn";
-import { ArrowRight, Check, Eye, EyeOff, Loader2, X } from "lucide-react";
+import { ArrowRight, Check, Loader2, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { FieldError, useForm, useWatch } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import * as z from "zod";
+import EmailInput, { ErrorMessage, PasswordInput } from "./inputs";
 
 const signUpSchema = z.object({
     avatarSeed: z.string().optional(),
@@ -80,83 +82,44 @@ export function SignUpForm() {
     };
 
     return (
-        <div className="space-y-3">
-            {authError && <div className="shadow-neo-sm border-2 border-red-500 bg-red-500/10 p-2.5 font-mono text-xs font-bold text-red-500">⚠️ {authError}</div>}
+        <div className="space-y-2">
+            {authError && <div className="shadow-neo-sm border-destructive bg-destructive/10 border-2 p-2.5 font-mono text-xs font-bold text-red-500">⚠️ {authError}</div>}
 
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-3">
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-2">
                 <div className="grid grid-cols-2 gap-2.5">
                     <div className="space-y-1">
                         <label className="font-mono text-[11px] font-bold tracking-wider uppercase">Full Name</label>
-                        <input
-                            type="text"
-                            placeholder="Dagmawi Solo"
-                            {...register("name")}
-                            className="bg-card border-foreground shadow-neo-sm w-full border-2 px-3 py-1.5 text-xs font-medium outline-none focus:translate-x-0.5 focus:translate-y-0.5"
-                        />
+                        <Input type="text" placeholder="Dagmawi Solo" {...register("name")} />
                         <ErrorMessage error={errors.name} />
                     </div>
 
                     <div className="space-y-1">
                         <label className="font-mono text-[11px] font-bold tracking-wider uppercase">Username</label>
                         <div className="relative">
-                            <input
-                                type="text"
-                                placeholder="dagmawi"
-                                {...register("username")}
-                                className="bg-card border-foreground shadow-neo-sm w-full border-2 px-3 py-1.5 pr-8 text-xs font-medium outline-none focus:translate-x-0.5 focus:translate-y-0.5"
-                            />
+                            <Input type="text" placeholder="dagmawi" {...register("username")} className="pr-8" />
                             <div className="absolute top-1/2 right-2.5 -translate-y-1/2">
                                 {usernameAvailableQuery.isPending ? (
                                     <Loader2 size={14} className="text-muted-foreground animate-spin" />
                                 ) : debouncedUsername.length >= 3 ? (
                                     !usernameAvailableQuery.data ? (
-                                        <X size={14} className="text-red-500" />
+                                        <X size={14} className="text-destructive" />
                                     ) : (
-                                        <Check size={14} className="text-green-500" />
+                                        <Check size={14} className="text-success" />
                                     )
                                 ) : null}
                             </div>
                         </div>
                         <ErrorMessage error={errors.username} />
                         {!errors.username && debouncedUsername.length >= 3 && (
-                            <p className={cn("mt-1 font-mono text-[10px] font-bold", !usernameAvailableQuery.data ? "text-red-500" : "text-green-600")}>
+                            <p className={cn("mt-1 font-mono text-[10px] font-bold", !usernameAvailableQuery.data ? "text-destructive" : "text-success")}>
                                 {!usernameAvailableQuery.data ? "Username is already taken" : "Username is available!"}
                             </p>
                         )}
                     </div>
                 </div>
 
-                <div className="space-y-1">
-                    <label className="font-mono text-[11px] font-bold tracking-wider uppercase">Email Address</label>
-                    <input
-                        type="email"
-                        placeholder="name@example.com"
-                        {...register("email")}
-                        className="bg-card border-foreground shadow-neo-sm w-full border-2 px-3.5 py-2 text-xs font-medium outline-none focus:translate-x-0.5 focus:translate-y-0.5"
-                    />
-                    <ErrorMessage error={errors.email} />
-                </div>
-
-                <div className="space-y-1">
-                    <label className="font-mono text-[11px] font-bold tracking-wider uppercase">Password</label>
-                    <div className="relative">
-                        <input
-                            placeholder="••••••••"
-                            {...register("password")}
-                            type={showPassword ? "text" : "password"}
-                            className="bg-card border-foreground shadow-neo-sm w-full border-2 px-3.5 py-2 pr-10 text-xs font-medium outline-none focus:translate-x-0.5 focus:translate-y-0.5"
-                        />
-                        <button
-                            type="button"
-                            onClick={() => setShowPassword((prev) => !prev)}
-                            className="text-muted-foreground hover:text-foreground absolute top-1/2 right-2.5 -translate-y-1/2 cursor-pointer p-1"
-                            aria-label="Toggle password visibility"
-                        >
-                            {showPassword ? <Eye size={16} /> : <EyeOff size={16} />}
-                        </button>
-                    </div>
-                    <ErrorMessage error={errors.password} />
-                </div>
+                <EmailInput errors={errors} register={register("email")} />
+                <PasswordInput setShowPassword={setShowPassword} showPassword={showPassword} errors={errors} register={register("password")} />
 
                 <div className="relative pt-0.5">
                     <label className="mb-2 inline-block font-mono text-[11px] font-bold tracking-wider uppercase">Choose Avatar</label>
@@ -177,9 +140,4 @@ export function SignUpForm() {
             </form>
         </div>
     );
-}
-
-function ErrorMessage({ error }: { error: FieldError | undefined }) {
-    if (!error) return null;
-    return <p className="mt-1 font-mono text-[10px] font-bold text-red-500">{error.message}</p>;
 }

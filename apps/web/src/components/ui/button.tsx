@@ -3,7 +3,7 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "cn";
 
 const buttonVariants = cva(
-    "group/button cursor-pointer inline-flex shrink-0 items-center duration-300 justify-center font-bold tracking-wider select-none outline-none transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+    "group/button cursor-pointer inline-flex shrink-0 items-center duration-100 justify-center font-bold tracking-wider select-none outline-none transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
     {
         variants: {
             variant: {
@@ -25,6 +25,13 @@ const buttonVariants = cva(
                 lg: "h-12 gap-2 px-6 text-sm font-black",
             },
         },
+        compoundVariants: [
+            {
+                variant: ["default", "outline", "secondary", "destructive"],
+                size: ["xs", "sm", "icon-xs", "icon-sm"],
+                className: "shadow-neo-sm active-sink-sm",
+            },
+        ],
         defaultVariants: {
             variant: "default",
             size: "default",
@@ -32,8 +39,15 @@ const buttonVariants = cva(
     },
 );
 
-function Button({ className, variant = "default", size = "default", ...props }: ButtonPrimitive.Props & VariantProps<typeof buttonVariants>) {
-    return <ButtonPrimitive data-slot="button" className={cn(buttonVariants({ variant, size, className }))} {...props} />;
+function Button({
+    className,
+    variant = "default",
+    size = "default",
+    ...props
+}: ButtonPrimitive.Props & VariantProps<typeof buttonVariants>) {
+    return (
+        <ButtonPrimitive data-slot="button" className={cn(buttonVariants({ variant, size, className }))} {...props} />
+    );
 }
 
 export { Button };

@@ -1,5 +1,6 @@
 import "@/app/globals.css";
 
+import { Toaster } from "@/components/ui/toast";
 import { clashDisplay, plusJakartaSans } from "@/constants/fonts";
 import AuthProvider from "@/providers/auth-provider";
 import TanStackQueryProvider from "@/providers/tan-stack-provider";
@@ -13,10 +14,17 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
     return (
-        <html lang="en" data-scroll-behavior="smooth" className={cn("min-h-screen", clashDisplay.variable, plusJakartaSans.variable)}>
+        <html
+            lang="en"
+            data-scroll-behavior="smooth"
+            className={cn("min-h-screen", clashDisplay.variable, plusJakartaSans.variable)}
+        >
             <TanStackQueryProvider>
                 <AuthProvider>
-                    <body className="relative h-full">{children}</body>
+                    <body className="relative h-full">
+                        {children}
+                        <Toaster />
+                    </body>
                 </AuthProvider>
             </TanStackQueryProvider>
         </html>

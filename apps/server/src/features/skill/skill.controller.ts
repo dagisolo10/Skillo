@@ -10,12 +10,7 @@ export class SkillController {
 
     @Public()
     @Get()
-    getSkills(
-        @Query("page") page?: string,
-        @Query("name") name?: string,
-        @Query("limit") limit?: string,
-        @Query("category") category?: SkillFilter,
-    ): Promise<PaginatedResult<SkillDetail>> {
+    getSkills(@Query("page") page?: string, @Query("name") name?: string, @Query("limit") limit?: string, @Query("category") category?: SkillFilter): Promise<PaginatedResult<SkillDetail>> {
         return this.skillService.getSkills(parsePageParams(page, limit), name, category);
     }
 }

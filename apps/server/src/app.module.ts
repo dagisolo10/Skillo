@@ -13,14 +13,6 @@ import { APP_GUARD } from "@nestjs/core";
 @Module({
     controllers: [AppController],
     providers: [{ useClass: AuthGuard, provide: APP_GUARD }],
-    imports: [
-        ConfigModule.forRoot({ isGlobal: true }),
-        UserModule,
-        SkillModule,
-        PrismaModule,
-        RequestModule,
-        SupabaseModule,
-        SocketIoModule,
-    ],
+    imports: [ConfigModule.forRoot({ isGlobal: true }), UserModule, SkillModule, PrismaModule, RequestModule, SupabaseModule, SocketIoModule],
 })
 export class AppModule {}

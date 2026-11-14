@@ -52,7 +52,7 @@ export class UserService {
 
     async updateProfile(data: UpdateUserDto) {
         const id = this.requestService.getUserId();
-        const { name, username, avatarSeed } = data;
+        const { name, username, avatarSeed, bio } = data;
 
         let normalizedUsername: string | undefined;
 
@@ -73,7 +73,7 @@ export class UserService {
         try {
             const updatedUser = await this.prisma.user.update({
                 where: { id },
-                data: { name, avatarSeed, username: normalizedUsername },
+                data: { name, avatarSeed, username: normalizedUsername, bio },
             });
 
             await this.syncAuthMetadata(id, { name, username: normalizedUsername, avatarSeed });
@@ -95,13 +95,10 @@ export class UserService {
     async deleteProfile() {
         const id = this.requestService.getUserId();
 
-        // Database first: if foreign keys or other rules block the delete, we fail
-        // before touching the auth account and nothing is left half-deleted.
         // TODO: once sessions, messages and the credit ledger exist, anonymize/soft-delete instead.
         try {
             await this.prisma.user.delete({ where: { id } });
         } catch (error) {
-            // Already gone (e.g. a previous attempt failed after this step): still remove the auth user.
             if (!isPrismaError(error, "P2025")) {
                 throw error;
             }

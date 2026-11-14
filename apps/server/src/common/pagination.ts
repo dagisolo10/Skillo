@@ -21,10 +21,7 @@ export function parsePageParams(page?: string, limit?: string): PageParams {
     };
 }
 
-export async function paginate<T>(
-    params: PageParams,
-    fetchPage: (args: { skip: number; take: number }) => Promise<T[]>,
-): Promise<PaginatedResult<T>> {
+export async function paginate<T>(params: PageParams, fetchPage: (args: { skip: number; take: number }) => Promise<T[]>): Promise<PaginatedResult<T>> {
     const rows = await fetchPage({
         take: params.limit + 1,
         skip: (params.page - 1) * params.limit,

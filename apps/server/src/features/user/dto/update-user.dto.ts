@@ -1,4 +1,4 @@
-import { IsOptional, IsString } from "class-validator";
+import { IsOptional, IsString, MaxLength } from "class-validator";
 
 export class UpdateUserDto {
     @IsOptional()
@@ -12,4 +12,9 @@ export class UpdateUserDto {
     @IsOptional()
     @IsString()
     avatarSeed: string;
+
+    @IsOptional()
+    @IsString()
+    @MaxLength(280, { message: "Bio cannot exceed 280 characters" })
+    bio: string | null;
 }
