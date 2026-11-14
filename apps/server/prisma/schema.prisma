@@ -16,6 +16,9 @@ model User {
     credits    Int      @default(2)
     createdAt  DateTime @default(now())
     skills     Skill[]
+
+    taughtSessions  Session[] @relation("TaughtSessions")
+    learnedSessions Session[] @relation("LearnedSessions")
 }
 
 model Skill {
@@ -30,8 +33,38 @@ model Skill {
     userId String
     user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
+    sessions Session[]
+
     @@index([userId])
     @@index([category])
+}
+
+model Session {
+    id         String        @id @default(uuid())
+    status     SessionStatus @default(PENDING)
+    createdAt  DateTime      @default(now())
+    acceptedAt DateTime?
+
+    skillId String
+    skill   Skill  @relation(fields: [skillId], references: [id], onDelete: Cascade)
+
+    mentorId String
+    mentor   User   @relation("TaughtSessions", fields: [mentorId], references: [id], onDelete: Cascade)
+
+    learnerId String
+    learner   User   @relation("LearnedSessions", fields: [learnerId], references: [id], onDelete: Cascade)
+
+    @@index([status])
+    @@index([skillId])
+    @@index([mentorId])
+    @@index([learnerId])
+}
+
+enum SessionStatus {
+    PENDING
+    ACTIVE
+    COMPLETED
+    CANCELLED
 }
 
 enum SkillCategory {

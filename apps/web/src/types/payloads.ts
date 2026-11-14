@@ -4,3 +4,7 @@ export type UpdateUserPayload = Partial<{
     bio: string | null;
     avatarSeed: string;
 }>;
+
+export type CreateSessionPayload = {
+    skillId: string;
+};

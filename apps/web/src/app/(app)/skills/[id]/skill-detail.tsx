@@ -4,14 +4,21 @@ import { UserAvatar } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { ErrorBlock } from "@/components/ui/error-block";
 import { toast } from "@/components/ui/toast";
+import { useAuth } from "@/contexts/auth-context";
+import { useCreateSession } from "@/hooks/tan-stack/session";
 import { useGetSkill } from "@/hooks/tan-stack/skill";
 import { formatDate } from "date-fns";
-import { ArrowLeft, Calendar, Check, ShieldCheck, Sparkles, Users, Zap } from "lucide-react";
+import { ArrowLeft, Calendar, Check, Loader2, ShieldCheck, Sparkles, Users, Zap } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { ElementType } from "react";
 
 export default function SkillDetailContent({ id }: { id: string }) {
+    const router = useRouter();
+    const { user, isSignedIn } = useAuth();
+
     const skillQuery = useGetSkill(id);
+    const createSession = useCreateSession();
 
     if (skillQuery.isPending) {
         return <SkillDetailSkeleton />;
@@ -35,6 +42,43 @@ export default function SkillDetailContent({ id }: { id: string }) {
 
     if (!skill) {
         return null;
+    }
+
+    const isOwnSkill = !!user && skill.userId === user.id;
+
+    function bookSession() {
+        if (!isSignedIn) {
+            toast.add({
+                type: "info",
+                title: "Sign in required",
+                description: "Sign in to book a session with this mentor.",
+                actionProps: {
+                    children: "Sign in",
+                    onClick: () => router.push("/auth"),
+                },
+            });
+            return;
+        }
+
+        createSession.mutate(
+            { skillId: skill.id },
+            {
+                onSuccess: () => {
+                    toast.add({
+                        type: "success",
+                        title: "Session requested",
+                        description: `Your request was sent to ${skill.user.name}.`,
+                    });
+                },
+                onError: (error) => {
+                    toast.add({
+                        type: "error",
+                        title: "Booking failed",
+                        description: error.message || "Could not create the session. Try again.",
+                    });
+                },
+            },
+        );
     }
 
     return (
@@ -110,18 +154,20 @@ export default function SkillDetailContent({ id }: { id: string }) {
                                 </p>
                             </div>
 
-                            {/* TODO: wire session booking once the sessions API exists. */}
                             <Button
-                                onClick={() =>
-                                    toast.add({
-                                        type: "info",
-                                        title: "Booking coming soon",
-                                        description: "Session scheduling is not available yet.",
-                                    })
-                                }
+                                onClick={bookSession}
+                                disabled={isOwnSkill || createSession.isPending}
                                 className="shadow-neo-sm active-sink-sm w-full gap-2 px-6 py-3 font-bold"
                             >
-                                <Zap size={14} /> Book a session
+                                {createSession.isPending ? (
+                                    <>
+                                        <Loader2 size={14} className="animate-spin" /> Requesting...
+                                    </>
+                                ) : (
+                                    <>
+                                        <Zap size={14} /> {isOwnSkill ? "This is your skill" : "Book a session"}
+                                    </>
+                                )}
                             </Button>
                             <p className="text-muted-foreground text-center font-mono text-xs">
                                 Your credit is held until the session is confirmed by both peers.

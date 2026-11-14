@@ -1,6 +1,7 @@
 const queryRoots = {
     user: ["user"] as const,
     skill: ["skill"] as const,
+    session: ["session"] as const,
 };
 
 export const queryKeys = {
@@ -11,5 +12,8 @@ export const queryKeys = {
     skill: {
         paginated: () => [...queryRoots.skill],
         detail: (id: string) => [...queryRoots.skill, "detail", id] as const,
+    },
+    session: {
+        all: () => [...queryRoots.session],
     },
 };

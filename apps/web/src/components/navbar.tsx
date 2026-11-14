@@ -35,6 +35,7 @@ export default function Navbar() {
 
     const authLinks: NavLink[] = [
         { href: "/skills", label: "Skills" },
+        { href: "/sessions", label: "Sessions" },
         { label: "Dashboard", href: "/dashboard" },
     ];
 
