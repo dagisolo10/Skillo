@@ -10,5 +10,6 @@ export const queryKeys = {
     },
     skill: {
         paginated: () => [...queryRoots.skill],
+        detail: (id: string) => [...queryRoots.skill, "detail", id] as const,
     },
 };

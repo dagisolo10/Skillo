@@ -1,7 +1,7 @@
 import { PageParams, paginate, PaginatedResult } from "@/common/pagination.js";
 import { PrismaService } from "@/common/prisma/prisma.service.js";
 import { SkillDetail, SkillFilter } from "@/features/skill/dto/skill.dto.js";
-import { BadRequestException, Injectable } from "@nestjs/common";
+import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
 import { SkillCategory } from "@prisma/client";
 
 @Injectable()
@@ -37,5 +37,26 @@ export class SkillService {
         });
 
         return skills;
+    }
+
+    async getSkill(id: string): Promise<SkillDetail> {
+        const skill = await this.prisma.skill.findUnique({
+            where: { id },
+            include: {
+                user: {
+                    select: {
+                        name: true,
+                        username: true,
+                        avatarSeed: true,
+                    },
+                },
+            },
+        });
+
+        if (!skill) {
+            throw new NotFoundException("Skill not found");
+        }
+
+        return skill;
     }
 }
