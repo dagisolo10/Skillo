@@ -33,7 +33,7 @@ interface ProfileModalProps {
 const userUpdateSchema = z.object({
     avatarSeed: z.string().optional(),
     bio: z.string().max(280, "Bio cannot exceed 280 characters").trim().nullish(),
-    name: z.string().min(3, "Name must be at least 3 characters").max(50).trim().optional(),
+    name: z.string().trim().min(3, "Name must be at least 3 characters").max(50).optional(),
     username: z
         .string()
         .min(3, "Username must be at least 3 characters")
@@ -106,13 +106,27 @@ export default function ProfileModal({ user, open, onOpenChange }: ProfileModalP
                     <div className="space-y-5">
                         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
                             <div className="space-y-1">
-                                <Label className="text-xs tracking-wider uppercase">Display name</Label>
-                                <Input value={name} maxLength={50} onChange={(e) => setName(e.target.value)} />
+                                <Label htmlFor="display-name" className="text-xs tracking-wider uppercase">
+                                    Display name
+                                </Label>
+                                <Input
+                                    id="display-name"
+                                    value={name}
+                                    maxLength={50}
+                                    onChange={(e) => setName(e.target.value)}
+                                />
                             </div>
 
                             <div className="space-y-1">
-                                <Label className="text-xs tracking-wider uppercase">Username</Label>
-                                <Input maxLength={30} value={username} onChange={(e) => setUsername(e.target.value)} />
+                                <Label htmlFor="profile-username" className="text-xs tracking-wider uppercase">
+                                    Username
+                                </Label>
+                                <Input
+                                    id="profile-username"
+                                    maxLength={30}
+                                    value={username}
+                                    onChange={(e) => setUsername(e.target.value)}
+                                />
                                 <p className="text-muted-foreground mt-1 font-mono text-[10px] break-all">
                                     {process.env.NEXT_PUBLIC_WEBSITE_URL}/u/{slugifyUsername(username)}
                                 </p>
@@ -120,8 +134,11 @@ export default function ProfileModal({ user, open, onOpenChange }: ProfileModalP
                         </div>
 
                         <div className="space-y-1">
-                            <Label className="text-xs tracking-wider uppercase">Bio</Label>
+                            <Label htmlFor="profile-bio" className="text-xs tracking-wider uppercase">
+                                Bio
+                            </Label>
                             <Textarea
+                                id="profile-bio"
                                 maxLength={280}
                                 value={bio ?? ""}
                                 onChange={(e) => setBio(e.target.value)}
@@ -134,8 +151,10 @@ export default function ProfileModal({ user, open, onOpenChange }: ProfileModalP
                         </div>
 
                         <div className="space-y-1">
-                            <Label className="text-xs tracking-wider uppercase">Select Avatar Seed</Label>
-                            <div className="flex flex-wrap gap-2.5">
+                            <Label id="avatar-seed-label" className="text-xs tracking-wider uppercase">
+                                Select Avatar Seed
+                            </Label>
+                            <div role="group" aria-labelledby="avatar-seed-label" className="flex flex-wrap gap-2.5">
                                 {AVATAR_SEEDS.map((seed) => (
                                     <Button
                                         onContextMenu={(e) => {
@@ -148,6 +167,8 @@ export default function ProfileModal({ user, open, onOpenChange }: ProfileModalP
                                         className={cn("h-auto p-1.5")}
                                         onClick={() => setAvatarSeed(seed)}
                                         variant={avatarSeed === seed ? "default" : "outline"}
+                                        aria-label={`Select ${seed} avatar`}
+                                        aria-pressed={avatarSeed === seed}
                                     >
                                         <UserAvatar seed={seed} size={40} />
                                     </Button>
