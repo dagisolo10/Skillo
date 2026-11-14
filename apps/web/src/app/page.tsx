@@ -67,15 +67,17 @@ export default function LandingPage() {
 
                     <div className="flex flex-col items-center justify-center gap-4 pt-4 sm:flex-row">
                         <Link href="/auth">
-                            <Button className="h-auto py-4 font-bold" size={"lg"}>
-                                Get Started Free{" "}
+                            <Button className="relative h-auto py-4 font-bold" size={"lg"}>
+                                <div className="bg-background absolute top-0 left-0 h-full w-0 transition-all duration-400 group-hover/button:w-full" />
+                                <p className="z-2">Get Started Free </p>
                                 <ArrowRight className="size-4 transition-transform duration-300 group-hover/button:translate-x-2" />
                             </Button>
                         </Link>
 
                         <Link href="/skills">
-                            <Button className="h-auto py-4 font-bold" size={"lg"} variant={"outline"}>
-                                Explore Marketplace
+                            <Button className="relative h-auto py-4 font-bold" size={"lg"} variant={"outline"}>
+                                <div className="bg-primary absolute top-0 left-0 h-full w-0 transition-all duration-400 group-hover/button:w-full" />
+                                <p className="z-2">Explore Marketplace</p>
                             </Button>
                         </Link>
                     </div>

@@ -12,7 +12,7 @@ export type User = {
 export type SkillCategoryFilter = SkillCategory | "All";
 export type SkillCategory = "Tech" | "Music" | "Languages" | "Design" | "Crafts" | "Wellness" | "Other";
 
-export type Skill = {
+type Skill = {
     id: string;
     name: string;
     emoji: string;
@@ -21,7 +21,7 @@ export type Skill = {
     createdAt: string;
 };
 
-export type SkillDetail = {
+export type SkillDetail = Skill & {
     id: string;
     name: string;
     emoji: string;
