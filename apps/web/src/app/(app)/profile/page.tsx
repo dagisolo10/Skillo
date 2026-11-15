@@ -1,6 +1,7 @@
 "use client";
 
 import ProfileModal from "@/components/profile/edit-modal";
+import ProfileSkeleton from "@/components/profile/profile-skeleton";
 import DeleteSkillDialog from "@/components/skills/delete-skill-dialog";
 import SkillFormModal from "@/components/skills/skill-form-modal";
 import { UserAvatar } from "@/components/ui/avatar";
@@ -48,7 +49,7 @@ export default function ProfilePage() {
     const userQuery = useGetUser();
 
     if (userQuery.isLoading) {
-        return <div className="font-clash flex h-screen items-center justify-center text-6xl font-black">Loading</div>;
+        return <ProfileSkeleton />;
     }
 
     if (userQuery.isError) {
