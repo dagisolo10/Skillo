@@ -14,6 +14,7 @@ export const queryKeys = {
         detail: (id: string) => [...queryRoots.skill, "detail", id] as const,
     },
     session: {
-        all: () => [...queryRoots.session],
+        root: () => [...queryRoots.session] as const,
+        all: (userId?: string | null) => [...queryRoots.session, userId ?? "anonymous"] as const,
     },
 };

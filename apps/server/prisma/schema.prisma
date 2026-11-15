@@ -1,5 +1,6 @@
 generator client {
-    provider = "prisma-client-js"
+    provider        = "prisma-client-js"
+    previewFeatures = ["partialIndexes"]
 }
 
 datasource db {
@@ -56,6 +57,7 @@ model Session {
     learnerId String
     learner   User   @relation("LearnedSessions", fields: [learnerId], references: [id], onDelete: Cascade)
 
+    @@unique([learnerId, skillId], where: raw("status IN ('PENDING', 'ACTIVE')"))
     @@index([status])
     @@index([skillId])
     @@index([mentorId])

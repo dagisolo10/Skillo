@@ -53,7 +53,7 @@ export default function SkillFormModal({ open, skill, onOpenChange }: SkillFormM
             return;
         }
 
-        const payload = { ...result.data, emoji: result.data.emoji || undefined };
+        const payload = { ...result.data, emoji: isEdit ? (result.data.emoji ?? "") : result.data.emoji || undefined };
 
         const onSuccess = () => {
             toast.add({

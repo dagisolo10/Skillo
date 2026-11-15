@@ -2,7 +2,13 @@ import { PrismaService } from "@/common/prisma/prisma.service.js";
 import { RequestService } from "@/common/request/request.service.js";
 import { CreateSessionDto, SessionDetail } from "@/features/session/dto/session.dto.js";
 import { BadRequestException, ConflictException, Injectable, NotFoundException } from "@nestjs/common";
-import { SessionStatus } from "@prisma/client";
+import { Prisma, SessionStatus } from "@prisma/client";
+
+const OPEN_SESSION_CONFLICT = "You already have an open session for this skill";
+
+function isPrismaError(error: unknown, code: string): error is Prisma.PrismaClientKnownRequestError {
+    return error instanceof Prisma.PrismaClientKnownRequestError && error.code === code;
+}
 
 const sessionInclude = {
     skill: {
@@ -41,8 +47,8 @@ export class SessionService {
     async createSession(dto: CreateSessionDto): Promise<SessionDetail> {
         const learnerId = this.requestService.getUserId();
 
-        const skill = await this.prisma.skill.findUnique({
-            where: { id: dto.skillId },
+        const skill = await this.prisma.skill.findFirst({
+            where: { id: dto.skillId, deletedAt: null },
             select: { id: true, userId: true },
         });
 
@@ -64,17 +70,27 @@ export class SessionService {
         });
 
         if (existing) {
-            throw new ConflictException("You already have an open session for this skill");
+            throw new ConflictException(OPEN_SESSION_CONFLICT);
         }
 
-        return this.prisma.session.create({
-            data: {
-                learnerId,
-                skillId: skill.id,
-                mentorId: skill.userId,
-            },
-            include: sessionInclude,
-        });
+        try {
+            return await this.prisma.session.create({
+                data: {
+                    learnerId,
+                    skillId: skill.id,
+                    mentorId: skill.userId,
+                },
+                include: sessionInclude,
+            });
+        } catch (error) {
+            // The partial unique index on open sessions is the real guard; this handles the race where
+            // two requests pass the lookup above before either insert lands.
+            if (isPrismaError(error, "P2002")) {
+                throw new ConflictException(OPEN_SESSION_CONFLICT);
+            }
+
+            throw error;
+        }
     }
 
     async getSessions(): Promise<SessionDetail[]> {
