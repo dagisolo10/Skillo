@@ -96,7 +96,7 @@ export default function SkillDetailContent({ id }: { id: string }) {
 
     return (
         <div className="bg-background min-h-screen w-full p-6 lg:p-10">
-            <div className="mx-auto max-w-6xl space-y-8">
+            <div className="mx-auto max-w-7xl space-y-8">
                 <Link href="/skills" className="text-muted-foreground hover:text-foreground inline-flex items-center gap-2 font-mono text-xs font-bold uppercase transition-colors">
                     <ArrowLeft size={14} /> Back to skills
                 </Link>
@@ -214,7 +214,7 @@ function InfoTile({ icon: Icon, label, value }: { icon: ElementType; label: stri
 function SkillDetailSkeleton() {
     return (
         <div className="bg-background min-h-screen w-full p-6 lg:p-10">
-            <div className="mx-auto max-w-6xl animate-pulse space-y-8">
+            <div className="mx-auto max-w-7xl animate-pulse space-y-8">
                 <div className="bg-muted h-4 w-32" />
 
                 <div className="grid grid-cols-1 gap-8 lg:grid-cols-12">

@@ -47,7 +47,7 @@ export default function Navbar() {
     const closeMenu = () => setIsMenuOpen(false);
 
     return (
-        <header className="shadow-neo bg-card fixed top-6 left-1/2 z-50 w-[calc(100%-2rem)] max-w-6xl -translate-x-1/2 px-4 py-3 sm:px-6">
+        <header className="shadow-neo bg-card fixed top-6 left-1/2 z-50 w-[calc(100%-2rem)] max-w-7xl -translate-x-1/2 px-4 py-3 sm:px-6">
             <div className="flex items-center justify-between gap-2">
                 <div className="flex shrink-0 items-center gap-3">
                     <Link href="/" className="font-clash text-2xl font-black tracking-tight sm:text-3xl" onClick={closeMenu}>

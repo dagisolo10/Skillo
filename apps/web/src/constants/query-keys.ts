@@ -1,4 +1,4 @@
-const queryRoots = {
+export const queryRoots = {
     user: ["user"] as const,
     skill: ["skill"] as const,
     session: ["session"] as const,
@@ -10,7 +10,7 @@ export const queryKeys = {
         username: (username: string) => [...queryRoots.user, "username", username] as const,
     },
     skill: {
-        paginated: () => [...queryRoots.skill, "paginated"] as const,
+        paginated: (filter?: Record<string, string | number | boolean | undefined>) => [...queryRoots.skill, "paginated", filter] as const,
         detail: (id: string) => [...queryRoots.skill, "detail", id] as const,
     },
     session: {
