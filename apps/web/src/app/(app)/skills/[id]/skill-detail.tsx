@@ -63,11 +63,15 @@ export default function SkillDetailContent({ id }: { id: string }) {
         createSession.mutate(
             { skillId: skill.id },
             {
-                onSuccess: () => {
+                onSuccess: (session) => {
                     toast.add({
                         type: "success",
                         title: "Session requested",
                         description: `Your request was sent to ${skill.user.name}.`,
+                        actionProps: {
+                            children: "View Session",
+                            onClick: () => router.push(`/sessions/${session.id}`),
+                        },
                     });
                 },
                 onError: (error) => {

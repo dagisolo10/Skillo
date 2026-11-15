@@ -201,7 +201,6 @@ function ProfileContent({ user }: { user: User }) {
                                     setEditingSkill(null);
                                     setIsSkillFormOpen(true);
                                 }}
-                                className="shadow-neo-sm active-sink-sm gap-1.5 font-bold"
                             >
                                 <Plus size={14} /> Add Skill
                             </Button>

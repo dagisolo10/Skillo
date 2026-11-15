@@ -7,7 +7,7 @@ export const Input = forwardRef<HTMLInputElement, InputHTMLAttributes<HTMLInputE
             ref={ref}
             {...props}
             className={cn(
-                "bg-card border-foreground shadow-neo-sm focus-visible:ring-primary h-10 w-full border-2 px-3.5 py-2 text-xs font-medium outline-none focus-visible:ring-2 focus-visible:ring-offset-1 disabled:opacity-60",
+                "bg-card border-foreground shadow-neo-sm focus-visible:border-primary h-10 w-full border-2 px-3.5 py-2 text-xs font-medium transition-all duration-300 outline-none disabled:opacity-60",
                 className,
             )}
         />
@@ -32,7 +32,7 @@ export function Textarea({ className, ...props }: React.ComponentProps<"textarea
         <textarea
             data-slot="textarea"
             className={cn(
-                "border-foreground bg-card shadow-neo-sm placeholder:text-muted-foreground focus-visible:border-ring aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:bg-input/30 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40 focus-visible:ring-primary flex field-sizing-content min-h-16 w-full rounded-md border-2 p-2.5 text-xs font-medium shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-2 focus-visible:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:ring-3 md:text-sm",
+                "border-foreground bg-card shadow-neo-sm placeholder:text-muted-foreground focus-visible:border-primary aria-invalid:border-destructive aria-invalid:ring-destructive/20 flex field-sizing-content min-h-16 w-full rounded-md border-2 p-2.5 text-xs font-medium shadow-xs transition-[color,box-shadow] outline-none disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:ring-1 md:text-sm",
                 className,
             )}
             {...props}

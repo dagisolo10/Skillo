@@ -39,7 +39,7 @@ function SessionsContent() {
     const userQuery = useGetUser();
     const sessionsQuery = useGetSessions();
 
-    const acceptOrRejectMutation = useAcceptOrRejectSession();
+    const acceptReject = useAcceptOrRejectSession();
 
     const user = userQuery.data;
 
@@ -79,7 +79,7 @@ function SessionsContent() {
                     description="Track the skills you are teaching and learning. Sessions start as pending until both peers confirm."
                     action={
                         <Link href="/skills">
-                            <Button className="shadow-neo-sm active-sink-sm gap-2 px-6 text-sm font-bold">
+                            <Button>
                                 <BookOpen size={14} /> Find a skill
                             </Button>
                         </Link>
@@ -113,15 +113,7 @@ function SessionsContent() {
                 ) : (
                     <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
                         {visible.map((session) => (
-                            <SessionCard
-                                key={session.id}
-                                session={session}
-                                userId={user?.id}
-                                searched={session.skillId === skillId}
-                                isPending={acceptOrRejectMutation.isPending}
-                                onAccept={() => acceptOrRejectMutation.mutate({ id: session.id, action: "accept" })}
-                                onReject={() => acceptOrRejectMutation.mutate({ id: session.id, action: "reject" })}
-                            />
+                            <SessionCard key={session.id} session={session} userId={user?.id} searched={session.skillId === skillId} onAcceptOrReject={acceptReject} />
                         ))}
                     </div>
                 )}
@@ -133,16 +125,12 @@ function SessionsContent() {
 function SessionCard({
     session,
     userId,
-    onAccept,
-    onReject,
-    isPending,
     searched = false,
+    onAcceptOrReject,
 }: {
     userId?: string;
     searched?: boolean;
-    isPending: boolean;
-    onAccept: () => void;
-    onReject: () => void;
+    onAcceptOrReject: ReturnType<typeof useAcceptOrRejectSession>;
     session: SessionDetail;
 }) {
     const isTeaching = session.mentorId === userId;
@@ -222,10 +210,21 @@ function SessionCard({
 
                     {isTeaching && isPendingSession && (
                         <div className="flex gap-2">
-                            <Button size="sm" onClick={onAccept} disabled={isPending} className="flex-1 gap-1 text-xs font-bold">
+                            <Button
+                                size="sm"
+                                disabled={onAcceptOrReject.isPending}
+                                className="flex-1 gap-1 text-xs font-bold"
+                                onClick={() => onAcceptOrReject.mutate({ id: session.id, action: "accept" })}
+                            >
                                 <Check size={12} /> Accept
                             </Button>
-                            <Button size="sm" variant="outline" onClick={onReject} disabled={isPending} className="flex-1 gap-1 text-xs font-bold">
+                            <Button
+                                size="sm"
+                                variant="outline"
+                                disabled={onAcceptOrReject.isPending}
+                                className="flex-1 gap-1 text-xs font-bold"
+                                onClick={() => onAcceptOrReject.mutate({ id: session.id, action: "reject" })}
+                            >
                                 <X size={12} /> Reject
                             </Button>
                         </div>

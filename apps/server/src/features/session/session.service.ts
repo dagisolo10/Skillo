@@ -124,37 +124,42 @@ export class SessionService {
     }
 
     async acceptOrRejectSession(id: string, action: "accept" | "reject"): Promise<SessionDetail> {
-        await this.assertMentorship(id);
-
-        return this.prisma.session.update({
-            where: { id },
-            include: sessionInclude,
-            data: {
-                ...(action === "accept" && {
-                    acceptedAt: new Date(),
-                    status: SessionStatus.ACTIVE,
-                }),
-                ...(action === "reject" && {
-                    status: SessionStatus.CANCELLED,
-                }),
-            },
-        });
-    }
-
-    private async assertMentorship(id: string) {
         const userId = this.requestService.getUserId();
 
-        const session = await this.prisma.session.findFirst({
-            where: {
-                id,
-                mentorId: userId,
-                status: SessionStatus.PENDING,
-            },
-            include: sessionInclude,
+        const updated = await this.prisma.$transaction(async (tx) => {
+            const result = await tx.session.updateMany({
+                where: {
+                    id,
+                    mentorId: userId,
+                    status: SessionStatus.PENDING,
+                },
+                data: {
+                    ...(action === "accept" && {
+                        acceptedAt: new Date(),
+                        status: SessionStatus.ACTIVE,
+                    }),
+                    ...(action === "reject" && {
+                        status: SessionStatus.CANCELLED,
+                    }),
+                },
+            });
+
+            if (result.count === 0) {
+                throw new NotFoundException("Session not found, already decided, or you are not the mentor");
+            }
+
+            const updatedSession = await tx.session.findUnique({
+                where: { id },
+                include: sessionInclude,
+            });
+
+            if (!updatedSession) {
+                throw new NotFoundException("Session disappeared after the decision was recorded — please refresh the page");
+            }
+
+            return updatedSession;
         });
 
-        if (!session) {
-            throw new NotFoundException("Session not found or you are not the mentor");
-        }
+        return updated;
     }
 }

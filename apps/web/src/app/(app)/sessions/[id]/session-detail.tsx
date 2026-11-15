@@ -2,13 +2,14 @@
 
 import { SESSION_STATUS_META, SessionStatusBadge } from "@/components/sessions/session-status";
 import { UserAvatar } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
 import { ErrorBlock } from "@/components/ui/error-block";
 import { useAuth } from "@/contexts/auth-context";
-import { useGetSession } from "@/hooks/tan-stack/session";
+import { useAcceptOrRejectSession, useGetSession } from "@/hooks/tan-stack/session";
 import { SessionDetail, SessionStatus, SessionUser } from "@/types/models";
 import { cn } from "cn";
 import { formatDate } from "date-fns";
-import { ArrowLeft, ArrowUpRight, Calendar, CheckCircle2, Clock, Users } from "lucide-react";
+import { ArrowLeft, ArrowUpRight, Calendar, Check, CheckCircle2, Clock, Users, X } from "lucide-react";
 import Link from "next/link";
 import { ElementType } from "react";
 
@@ -22,6 +23,7 @@ const STATUS_BLURBS: Record<SessionStatus, string> = {
 export default function SessionDetailContent({ id }: { id: string }) {
     const { user } = useAuth();
     const sessionQuery = useGetSession(id);
+    const acceptReject = useAcceptOrRejectSession();
 
     if (sessionQuery.isPending) {
         return <SessionDetailSkeleton />;
@@ -43,10 +45,10 @@ export default function SessionDetailContent({ id }: { id: string }) {
         return null;
     }
 
-    return <SessionView session={session} viewerId={user?.id} />;
+    return <SessionView session={session} viewerId={user?.id} onAcceptOrReject={acceptReject} />;
 }
 
-function SessionView({ session, viewerId }: { session: SessionDetail; viewerId?: string }) {
+function SessionView({ session, viewerId, onAcceptOrReject }: { session: SessionDetail; viewerId?: string; onAcceptOrReject: ReturnType<typeof useAcceptOrRejectSession> }) {
     const meta = SESSION_STATUS_META[session.status];
     const StatusIcon = meta.icon;
     const blurb = STATUS_BLURBS[session.status];
@@ -122,6 +124,17 @@ function SessionView({ session, viewerId }: { session: SessionDetail; viewerId?:
                             <SessionStatusBadge status={session.status} className="shadow-neo-sm" />
                             <p className="font-mono text-xs leading-relaxed font-bold">{blurb}</p>
                             <p className="font-mono text-[10px] leading-relaxed font-bold opacity-80">Every swap is one-on-one and costs 1 credit.</p>
+
+                            {isMentor && session.status === "PENDING" && (
+                                <div className="flex gap-2 pt-2">
+                                    <Button size="sm" onClick={() => onAcceptOrReject.mutate({ id: session.id, action: "accept" })} disabled={onAcceptOrReject.isPending} className="flex-1 gap-1 text-xs font-bold">
+                                        <Check size={12} /> Accept
+                                    </Button>
+                                    <Button size="sm" variant="outline" onClick={() => onAcceptOrReject.mutate({ id: session.id, action: "reject" })} disabled={onAcceptOrReject.isPending} className="flex-1 gap-1 text-xs font-bold">
+                                        <X size={12} /> Reject
+                                    </Button>
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>

@@ -1,6 +1,7 @@
 "use client";
 
 import { SkillCard } from "@/components/skills/skill-card";
+import SkillFormModal from "@/components/skills/skill-form-modal";
 import SkillCardLoading, { SkillCardSkeleton } from "@/components/skills/skills-skeleton";
 import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
@@ -12,7 +13,7 @@ import useDebounce from "@/hooks/custom/use-debounce";
 import { useGetSkills } from "@/hooks/tan-stack/skill";
 import { SkillCategoryFilter } from "@/types/models";
 import { cn } from "cn";
-import { Loader2, Search, X } from "lucide-react";
+import { Loader2, Plus, Search, X } from "lucide-react";
 import { useState } from "react";
 
 const LIMIT = 9;
@@ -21,6 +22,7 @@ export default function SkillsPage() {
     const [search, setSearch] = useState("");
     const name = useDebounce(search);
     const [category, setCategory] = useState<SkillCategoryFilter>("All");
+    const [isAddSkillOpen, setIsAddSkillOpen] = useState(false);
 
     const skillsQuery = useGetSkills({ category, name, limit: LIMIT });
 
@@ -32,9 +34,14 @@ export default function SkillsPage() {
                     eyebrow="⚡ Marketplace"
                     description="Browse skills offered by peers. Book a session, hold your credit in escrow, and start learning."
                     action={
-                        <span className="text-muted-foreground font-mono text-xs font-bold">
-                            {skillsQuery.items.length} loaded skill{skillsQuery.items.length === 1 ? "" : "s"}
-                        </span>
+                        <div className="flex items-center gap-3">
+                            <span className="text-muted-foreground font-mono text-xs font-bold">
+                                {skillsQuery.items.length} loaded skill{skillsQuery.items.length === 1 ? "" : "s"}
+                            </span>
+                            <Button onClick={() => setIsAddSkillOpen(true)}>
+                                <Plus size={14} /> Add Skill
+                            </Button>
+                        </div>
                     }
                 />
 
@@ -104,11 +111,7 @@ export default function SkillsPage() {
                             {skillsQuery.isFetchNextPageError ? (
                                 <ErrorBlock title="Failed to fetch the next batch of skills." description={skillsQuery.error.message} onRetry={() => skillsQuery.fetchNextPage()} />
                             ) : skillsQuery.hasNextPage ? (
-                                <Button
-                                    onClick={() => skillsQuery.fetchNextPage()}
-                                    disabled={skillsQuery.isFetchingNextPage}
-                                    className="shadow-neo-sm active-sink-sm px-6 py-3 font-bold"
-                                >
+                                <Button onClick={() => skillsQuery.fetchNextPage()} disabled={skillsQuery.isFetchingNextPage} className="shadow-neo-sm active-sink-sm px-6 py-3 font-bold">
                                     {skillsQuery.isFetchingNextPage ? (
                                         <>
                                             <Loader2 className="mr-2 size-4 animate-spin" /> Fetching more...
@@ -128,6 +131,8 @@ export default function SkillsPage() {
                     </div>
                 )}
             </div>
+
+            {isAddSkillOpen && <SkillFormModal open={isAddSkillOpen} onOpenChange={setIsAddSkillOpen} />}
         </div>
     );
 }
