@@ -1,9 +1,8 @@
-import { BadRequestException, ConflictException, Injectable, NotFoundException } from "@nestjs/common";
-import { CreateSessionDto, SessionDetail } from "@/features/session/dto/session.dto.js";
-import { RequestService } from "@/common/request/request.service.js";
 import { PrismaService } from "@/common/prisma/prisma.service.js";
+import { RequestService } from "@/common/request/request.service.js";
+import { CreateSessionDto, SessionDetail } from "@/features/session/dto/session.dto.js";
+import { BadRequestException, ConflictException, Injectable, NotFoundException } from "@nestjs/common";
 import { Prisma, SessionStatus } from "@prisma/client";
-
 
 const OPEN_SESSION_CONFLICT = "You already have an open session for this skill";
 
@@ -122,5 +121,40 @@ export class SessionService {
         }
 
         return session;
+    }
+
+    async acceptOrRejectSession(id: string, action: "accept" | "reject"): Promise<SessionDetail> {
+        await this.assertMentorship(id);
+
+        return this.prisma.session.update({
+            where: { id },
+            include: sessionInclude,
+            data: {
+                ...(action === "accept" && {
+                    acceptedAt: new Date(),
+                    status: SessionStatus.ACTIVE,
+                }),
+                ...(action === "reject" && {
+                    status: SessionStatus.CANCELLED,
+                }),
+            },
+        });
+    }
+
+    private async assertMentorship(id: string) {
+        const userId = this.requestService.getUserId();
+
+        const session = await this.prisma.session.findFirst({
+            where: {
+                id,
+                mentorId: userId,
+                status: SessionStatus.PENDING,
+            },
+            include: sessionInclude,
+        });
+
+        if (!session) {
+            throw new NotFoundException("Session not found or you are not the mentor");
+        }
     }
 }

@@ -6,12 +6,12 @@ import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
 import { ErrorBlock } from "@/components/ui/error-block";
 import { PageHeader } from "@/components/ui/page-header";
-import { useGetSessions } from "@/hooks/tan-stack/session";
+import { useAcceptOrRejectSession, useGetSessions } from "@/hooks/tan-stack/session";
 import { useGetUser } from "@/hooks/tan-stack/user";
 import { SessionDetail } from "@/types/models";
 import { cn } from "cn";
 import { formatDate } from "date-fns";
-import { ArrowUpRight, BookOpen, Clock } from "lucide-react";
+import { ArrowUpRight, BookOpen, Check, Clock, X } from "lucide-react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Suspense, useState } from "react";
@@ -38,6 +38,8 @@ function SessionsContent() {
     const [filter, setFilter] = useState<SessionFilter>("all");
     const userQuery = useGetUser();
     const sessionsQuery = useGetSessions();
+
+    const acceptOrRejectMutation = useAcceptOrRejectSession();
 
     const user = userQuery.data;
 
@@ -111,7 +113,15 @@ function SessionsContent() {
                 ) : (
                     <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
                         {visible.map((session) => (
-                            <SessionCard key={session.id} session={session} userId={user?.id} searched={session.skillId === skillId} />
+                            <SessionCard
+                                key={session.id}
+                                session={session}
+                                userId={user?.id}
+                                searched={session.skillId === skillId}
+                                isPending={acceptOrRejectMutation.isPending}
+                                onAccept={() => acceptOrRejectMutation.mutate({ id: session.id, action: "accept" })}
+                                onReject={() => acceptOrRejectMutation.mutate({ id: session.id, action: "reject" })}
+                            />
                         ))}
                     </div>
                 )}
@@ -120,8 +130,23 @@ function SessionsContent() {
     );
 }
 
-function SessionCard({ session, userId, searched = false }: { session: SessionDetail; userId?: string; searched?: boolean }) {
+function SessionCard({
+    session,
+    userId,
+    onAccept,
+    onReject,
+    isPending,
+    searched = false,
+}: {
+    userId?: string;
+    searched?: boolean;
+    isPending: boolean;
+    onAccept: () => void;
+    onReject: () => void;
+    session: SessionDetail;
+}) {
     const isTeaching = session.mentorId === userId;
+    const isPendingSession = session.status === "PENDING";
     const partner = isTeaching ? session.learner : session.mentor;
 
     return (
@@ -194,6 +219,18 @@ function SessionCard({ session, userId, searched = false }: { session: SessionDe
                         </span>
                         {session.acceptedAt && <span className="text-success">Accepted {formatDate(session.acceptedAt, "d MMM")}</span>}
                     </div>
+
+                    {isTeaching && isPendingSession && (
+                        <div className="flex gap-2">
+                            <Button size="sm" onClick={onAccept} disabled={isPending} className="flex-1 gap-1 text-xs font-bold">
+                                <Check size={12} /> Accept
+                            </Button>
+                            <Button size="sm" variant="outline" onClick={onReject} disabled={isPending} className="flex-1 gap-1 text-xs font-bold">
+                                <X size={12} /> Reject
+                            </Button>
+                        </div>
+                    )}
+
                     <Link href={`/sessions/${session.id}`} className="group/link inline-flex items-center gap-1 font-mono text-[10px] font-black uppercase underline underline-offset-4">
                         View session
                         <ArrowUpRight size={11} className="transition-transform group-hover/link:translate-x-0.5 group-hover/link:-translate-y-0.5" />

@@ -41,3 +41,18 @@ export function useCreateSession(options?: TMutationOptions<SessionDetail, Creat
         },
     });
 }
+
+export function useAcceptOrRejectSession(options?: TMutationOptions<SessionDetail, { id: string; action: "accept" | "reject" }>) {
+    const { user } = useAuth();
+    const qc = useQueryClient();
+
+    return useMutation({
+        ...options,
+        mutationFn: async ({ id, action }) => requestApi(() => api.patch<SessionDetail>(`/session/${encodeURIComponent(id)}/${action}`)),
+        onSuccess(session, ...args) {
+            options?.onSuccess?.(session, ...args);
+            qc.setQueryData(queryKeys.session.detail(user?.id, session.id), session);
+            qc.invalidateQueries({ queryKey: queryKeys.session.root() });
+        },
+    });
+}
