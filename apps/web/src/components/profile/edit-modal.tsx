@@ -11,16 +11,7 @@ import { cn } from "cn";
 import { Check, Edit3, Eye } from "lucide-react";
 import { SubmitEvent, useState } from "react";
 import z from "zod";
-import {
-    Dialog,
-    DialogClose,
-    DialogContent,
-    DialogDescription,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
-} from "../ui/dialog";
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "../ui/dialog";
 
 const AVATAR_SEEDS = ["CyberHero", "Aria", "Felix", "Zephyr", "Orion", "Kuma", "Nova", "Atlas", "Valkyrie", "Specter"];
 
@@ -97,9 +88,7 @@ export default function ProfileModal({ user, open, onOpenChange }: ProfileModalP
                     <DialogTitle className="font-clash flex items-center gap-2 text-2xl font-bold tracking-tight">
                         <Edit3 className="text-foreground" size={24} /> Profile Update
                     </DialogTitle>
-                    <DialogDescription className="text-muted-foreground font-mono text-xs">
-                        Update your public profile.
-                    </DialogDescription>
+                    <DialogDescription className="text-muted-foreground font-mono text-xs">Update your public profile.</DialogDescription>
                 </DialogHeader>
 
                 <form onSubmit={saveChanges} className="space-y-6 pt-2">
@@ -109,24 +98,14 @@ export default function ProfileModal({ user, open, onOpenChange }: ProfileModalP
                                 <Label htmlFor="display-name" className="text-xs tracking-wider uppercase">
                                     Display name
                                 </Label>
-                                <Input
-                                    id="display-name"
-                                    value={name}
-                                    maxLength={50}
-                                    onChange={(e) => setName(e.target.value)}
-                                />
+                                <Input id="display-name" value={name} maxLength={50} onChange={(e) => setName(e.target.value)} />
                             </div>
 
                             <div className="space-y-1">
                                 <Label htmlFor="profile-username" className="text-xs tracking-wider uppercase">
                                     Username
                                 </Label>
-                                <Input
-                                    id="profile-username"
-                                    maxLength={30}
-                                    value={username}
-                                    onChange={(e) => setUsername(e.target.value)}
-                                />
+                                <Input id="profile-username" maxLength={30} value={username} onChange={(e) => setUsername(e.target.value)} />
                                 <p className="text-muted-foreground mt-1 font-mono text-[10px] break-all">
                                     {process.env.NEXT_PUBLIC_WEBSITE_URL}/u/{slugifyUsername(username)}
                                 </p>
@@ -137,13 +116,7 @@ export default function ProfileModal({ user, open, onOpenChange }: ProfileModalP
                             <Label htmlFor="profile-bio" className="text-xs tracking-wider uppercase">
                                 Bio
                             </Label>
-                            <Textarea
-                                id="profile-bio"
-                                maxLength={280}
-                                value={bio ?? ""}
-                                onChange={(e) => setBio(e.target.value)}
-                                className="h-28 w-full resize-none"
-                            />
+                            <Textarea id="profile-bio" maxLength={280} value={bio ?? ""} onChange={(e) => setBio(e.target.value)} className="h-28 w-full resize-none" />
                             <div className="text-muted-foreground mt-2 flex justify-between font-mono text-[10px]">
                                 <span>Markdown & plain text supported</span>
                                 <span>{bio?.length ?? 0}/280</span>
@@ -180,21 +153,12 @@ export default function ProfileModal({ user, open, onOpenChange }: ProfileModalP
                     <DialogFooter className="flex items-center justify-end gap-3 border-t-2 border-black pt-5">
                         <DialogClose
                             render={
-                                <Button
-                                    type="button"
-                                    variant="outline"
-                                    onClick={() => onOpenChange(false)}
-                                    className="shadow-neo-sm font-bold"
-                                >
+                                <Button type="button" variant="outline" onClick={() => onOpenChange(false)} className="shadow-neo-sm font-bold">
                                     Cancel
                                 </Button>
                             }
                         />
-                        <Button
-                            type="submit"
-                            disabled={userMut.isPending}
-                            className="shadow-neo-sm active-sink-sm gap-2 px-6 font-bold"
-                        >
+                        <Button type="submit" disabled={userMut.isPending} className="shadow-neo-sm active-sink-sm gap-2 px-6 font-bold">
                             {userMut.isPending ? "Saving..." : "Save Changes"}
                         </Button>
                     </DialogFooter>
@@ -213,9 +177,7 @@ export default function ProfileModal({ user, open, onOpenChange }: ProfileModalP
                     </DialogHeader>
 
                     <div className="flex flex-col items-center justify-center gap-4 py-6">
-                        <div className="shadow-neo bg-card p-4">
-                            {previewSeed && <UserAvatar seed={previewSeed} size={200} />}
-                        </div>
+                        <div className="shadow-neo bg-card p-4">{previewSeed && <UserAvatar seed={previewSeed} size={200} />}</div>
                         <span className="font-mono font-bold tracking-wider uppercase">{previewSeed}</span>
                     </div>
 

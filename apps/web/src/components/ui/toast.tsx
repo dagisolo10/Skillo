@@ -21,10 +21,7 @@ function ToastViewport({ className, ...props }: ToastPrimitive.Viewport.Props) {
     return (
         <ToastPrimitive.Viewport
             data-slot="toast-viewport"
-            className={cn(
-                "pointer-events-none fixed inset-x-4 bottom-4 z-50 mx-auto w-auto max-w-sm outline-none sm:right-4 sm:left-auto sm:mx-0 sm:w-full",
-                className,
-            )}
+            className={cn("pointer-events-none fixed inset-x-4 bottom-4 z-50 mx-auto w-auto max-w-sm outline-none sm:right-4 sm:left-auto sm:mx-0 sm:w-full", className)}
             {...props}
         />
     );
@@ -72,55 +69,24 @@ function ToastContent({ className, ...props }: ToastPrimitive.Content.Props) {
 }
 
 function ToastTitle({ className, ...props }: ToastPrimitive.Title.Props) {
-    return (
-        <ToastPrimitive.Title
-            data-slot="toast-title"
-            className={cn("font-clash text-sm font-semibold", className)}
-            {...props}
-        />
-    );
+    return <ToastPrimitive.Title data-slot="toast-title" className={cn("font-clash text-sm font-semibold", className)} {...props} />;
 }
 
 function ToastDescription({ className, ...props }: ToastPrimitive.Description.Props) {
-    return (
-        <ToastPrimitive.Description
-            data-slot="toast-description"
-            className={cn("text-muted-foreground text-sm font-medium", className)}
-            {...props}
-        />
-    );
+    return <ToastPrimitive.Description data-slot="toast-description" className={cn("text-muted-foreground text-sm font-medium", className)} {...props} />;
 }
 
-function ToastAction({
-    className,
-    render = <Button variant="outline" size="sm" />,
-    ...props
-}: ToastPrimitive.Action.Props) {
-    return (
-        <ToastPrimitive.Action
-            data-slot="toast-action"
-            render={render}
-            className={cn("shrink-0", className)}
-            {...props}
-        />
-    );
+function ToastAction({ className, render = <Button variant="outline" size="sm" />, ...props }: ToastPrimitive.Action.Props) {
+    return <ToastPrimitive.Action data-slot="toast-action" render={render} className={cn("shrink-0", className)} {...props} />;
 }
 
-function ToastClose({
-    className,
-    children,
-    render = <Button variant="ghost" size="icon-sm" />,
-    ...props
-}: ToastPrimitive.Close.Props) {
+function ToastClose({ className, children, render = <Button variant="ghost" size="icon-sm" />, ...props }: ToastPrimitive.Close.Props) {
     return (
         <ToastPrimitive.Close
             data-slot="toast-close"
             aria-label="Close toast"
             render={render}
-            className={cn(
-                "text-muted-foreground hover:text-foreground relative shrink-0 after:absolute after:-inset-2 after:content-['']",
-                className,
-            )}
+            className={cn("text-muted-foreground hover:text-foreground relative shrink-0 after:absolute after:-inset-2 after:content-['']", className)}
             {...props}
         >
             {children ?? <XIcon aria-hidden="true" />}
@@ -156,10 +122,7 @@ function ToastIcon({ type }: { type: string | undefined }) {
     }
 
     return (
-        <span
-            data-slot="toast-icon"
-            className="shrink-0 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4"
-        >
+        <span data-slot="toast-icon" className="shrink-0 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4">
             {icon}
         </span>
     );
@@ -199,18 +162,4 @@ function Toaster({ children, toastManager = toast, ...props }: ToastPrimitive.Pr
 const createToastManager = ToastPrimitive.createToastManager;
 const useToastManager = ToastPrimitive.useToastManager;
 
-export {
-    createToastManager,
-    Toast,
-    toast,
-    ToastAction,
-    ToastClose,
-    ToastContent,
-    ToastDescription,
-    Toaster,
-    ToastPortal,
-    ToastProvider,
-    ToastTitle,
-    ToastViewport,
-    useToastManager,
-};
+export { createToastManager, Toast, toast, ToastAction, ToastClose, ToastContent, ToastDescription, Toaster, ToastPortal, ToastProvider, ToastTitle, ToastViewport, useToastManager };

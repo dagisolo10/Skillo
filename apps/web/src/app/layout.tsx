@@ -14,11 +14,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
     return (
-        <html
-            lang="en"
-            data-scroll-behavior="smooth"
-            className={cn("min-h-screen", clashDisplay.variable, plusJakartaSans.variable)}
-        >
+        <html lang="en" data-scroll-behavior="smooth" className={cn("min-h-screen", clashDisplay.variable, plusJakartaSans.variable)}>
             <TanStackQueryProvider>
                 <AuthProvider>
                     <body className="relative h-full">

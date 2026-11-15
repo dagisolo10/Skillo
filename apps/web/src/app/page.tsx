@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
 import { ErrorBlock } from "@/components/ui/error-block";
 import { CATEGORIES } from "@/constants/data";
+import { useAuth } from "@/contexts/auth-context";
 import { useGetSkills } from "@/hooks/tan-stack/skill";
 import { SkillCategoryFilter } from "@/types/models";
 import { cn } from "cn";
@@ -19,26 +20,24 @@ const STEPS = [
     {
         bg: "bg-primary",
         title: "Teach & Earn",
-        description:
-            "List a skill you excel at, whether it's coding, drums, or cooking. Complete a teaching session and earn 1 Credit.",
+        description: "List a skill you excel at, whether it's coding, drums, or cooking. Complete a teaching session and earn 1 Credit.",
     },
     {
         bg: "bg-secondary",
         title: "Escrow Booking",
-        description:
-            "Book a session with a mentor. Your credit is held safely in escrow and only pays out when the session is completed and confirmed by both parties.",
+        description: "Book a session with a mentor. Your credit is held safely in escrow and only pays out when the session is completed and confirmed by both parties.",
     },
     {
         bg: "bg-accent",
         title: "Level Up",
-        description:
-            "Use your earned credits to learn from other skilled peers across the globe. Endless growth without spending real money.",
+        description: "Use your earned credits to learn from other skilled peers across the globe. Endless growth without spending real money.",
     },
 ];
 
 const LIMIT = 3;
 
 export default function LandingPage() {
+    const { isSignedIn } = useAuth();
     const [category, setCategory] = useState<SkillCategoryFilter>("All");
 
     const skillsQuery = useGetSkills({ limit: LIMIT, category });
@@ -49,30 +48,27 @@ export default function LandingPage() {
 
             <div className="mt-36">
                 <section className="mx-auto space-y-6 pt-8 pb-16 text-center">
-                    <div className="bg-primary shadow-neo-sm inline-block -rotate-1 px-4 py-1.5 font-mono text-xs font-bold tracking-widest uppercase">
-                        ⚡ Peer-to-Peer Skill Swapping Economy
-                    </div>
+                    <div className="bg-primary shadow-neo-sm inline-block -rotate-1 px-4 py-1.5 font-mono text-xs font-bold tracking-widest uppercase">⚡ Peer-to-Peer Skill Swapping Economy</div>
 
                     <h1 className="font-clash text-5xl leading-none font-black tracking-tight md:text-7xl">
                         TEACH WHAT YOU KNOW. <br />
-                        <span className="bg-primary shadow-neo inline-block -translate-y-2 rotate-2 px-3">
-                            LEARN WHAT YOU DON&apos;T.
-                        </span>
+                        <span className="bg-primary shadow-neo inline-block -translate-y-2 rotate-2 px-3">LEARN WHAT YOU DON&apos;T.</span>
                     </h1>
 
                     <p className="text-muted-foreground mx-auto max-w-2xl text-lg font-medium">
-                        A credit-based barter platform for modern builders, creators, and minds. Earn credits by
-                        teaching your expertise, spend them to master something new. Zero cash barrier.
+                        A credit-based barter platform for modern builders, creators, and minds. Earn credits by teaching your expertise, spend them to master something new. Zero cash barrier.
                     </p>
 
                     <div className="flex flex-col items-center justify-center gap-4 pt-4 sm:flex-row">
-                        <Link href="/auth">
-                            <Button className="relative h-auto py-4 font-bold" size={"lg"}>
-                                <div className="bg-background absolute top-0 left-0 h-full w-0 transition-all duration-400 group-hover/button:w-full" />
-                                <p className="z-2">Get Started Free </p>
-                                <ArrowRight className="size-4 transition-transform duration-300 group-hover/button:translate-x-2" />
-                            </Button>
-                        </Link>
+                        {!isSignedIn && (
+                            <Link href="/auth">
+                                <Button className="relative h-auto py-4 font-bold" size={"lg"}>
+                                    <div className="bg-background absolute top-0 left-0 h-full w-0 transition-all duration-400 group-hover/button:w-full" />
+                                    <p className="z-2">Get Started Free </p>
+                                    <ArrowRight className="size-4 transition-transform duration-300 group-hover/button:translate-x-2" />
+                                </Button>
+                            </Link>
+                        )}
 
                         <Link href="/skills">
                             <Button className="relative h-auto py-4 font-bold" size={"lg"} variant={"outline"}>
@@ -86,22 +82,13 @@ export default function LandingPage() {
                 <section id="how-it-works" className="mx-auto scroll-mt-12 border-t-4 border-black py-16">
                     <div className="mb-12 text-center">
                         <h2 className="font-clash text-3xl font-black md:text-4xl">HOW THE CREDIT ESCROW WORKS</h2>
-                        <p className="text-muted-foreground mt-2 font-medium">
-                            Simple, fair, and decentralized knowledge exchange.
-                        </p>
+                        <p className="text-muted-foreground mt-2 font-medium">Simple, fair, and decentralized knowledge exchange.</p>
                     </div>
 
                     <div className="mx-auto grid max-w-7xl grid-cols-1 gap-6 md:grid-cols-3">
                         {STEPS.map(({ title, description, bg }, index) => (
                             <div key={title} className="bg-card shadow-neo relative space-y-4 p-6">
-                                <div
-                                    className={cn(
-                                        bg,
-                                        "font-clash shadow-neo-sm absolute -top-4 -left-4 flex h-10 w-10 items-center justify-center text-lg font-black",
-                                    )}
-                                >
-                                    {index + 1}
-                                </div>
+                                <div className={cn(bg, "font-clash shadow-neo-sm absolute -top-4 -left-4 flex h-10 w-10 items-center justify-center text-lg font-black")}>{index + 1}</div>
                                 <h3 className="font-clash pt-2 text-xl font-bold">{title}</h3>
                                 <p className="text-muted-foreground text-sm font-medium">{description}</p>
                             </div>
@@ -115,22 +102,13 @@ export default function LandingPage() {
                             <h2 className="font-clash text-3xl font-black">LIVE SKILL BOARD</h2>
                             <p className="text-muted-foreground font-medium">
                                 Browse what peers are currently offering on Skillo
-                                {skillsQuery.items.length
-                                    ? ` — ${skillsQuery.items.length} teachable skills and counting`
-                                    : ""}
-                                .
+                                {skillsQuery.items.length ? ` — ${skillsQuery.items.length} teachable skills and counting` : ""}.
                             </p>
                         </div>
 
                         <div className="flex flex-wrap gap-2">
                             {CATEGORIES.map((cat) => (
-                                <Button
-                                    variant={category === cat ? "default" : "outline"}
-                                    key={cat}
-                                    size={"sm"}
-                                    onClick={() => setCategory(cat)}
-                                    className={cn("h-auto py-1")}
-                                >
+                                <Button variant={category === cat ? "default" : "outline"} key={cat} size={"sm"} onClick={() => setCategory(cat)} className={cn("h-auto py-1")}>
                                     {cat}
                                 </Button>
                             ))}
@@ -141,19 +119,13 @@ export default function LandingPage() {
                         {skillsQuery.isPending ? (
                             <SkillCardLoading limit={LIMIT} />
                         ) : skillsQuery.error ? (
-                            <ErrorBlock
-                                title="Failed to load skills"
-                                description={skillsQuery.error.message}
-                                onRetry={() => skillsQuery.refetch()}
-                            />
+                            <ErrorBlock title="Failed to load skills" description={skillsQuery.error.message} onRetry={() => skillsQuery.refetch()} />
                         ) : skillsQuery.items.length === 0 ? (
                             <EmptyState
                                 emoji="🔍"
                                 description="Try adjusting your category or search query."
                                 action={<Button onClick={() => setCategory("All")}>Reset</Button>}
-                                title={
-                                    category === "All" ? "No skills available yet" : `No skills found in ${category}`
-                                }
+                                title={category === "All" ? "No skills available yet" : `No skills found in ${category}`}
                             />
                         ) : (
                             <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -167,31 +139,22 @@ export default function LandingPage() {
                     <div className="mt-8 flex justify-center">
                         <Link href="/skills">
                             <Button className="px-6 text-sm">
-                                View the full marketplace{" "}
-                                <ArrowRight className="size-4 transition-transform duration-300 group-hover/button:translate-x-2" />
+                                View the full marketplace <ArrowRight className="size-4 transition-transform duration-300 group-hover/button:translate-x-2" />
                             </Button>
                         </Link>
                     </div>
                 </section>
 
                 <section className="bg-primary shadow-neo-lg relative mx-auto my-16 max-w-7xl space-y-6 overflow-hidden border-4 border-black p-8 text-center md:p-12">
-                    <div className="pointer-events-none absolute top-0 right-0 p-4 font-mono text-9xl font-black opacity-10">
-                        ⚡
-                    </div>
+                    <div className="pointer-events-none absolute top-0 right-0 p-4 font-mono text-9xl font-black opacity-10">⚡</div>
 
-                    <h2 className="font-clash text-4xl font-black tracking-tight md:text-5xl">
-                        READY TO SHARE YOUR EXPERTISE?
-                    </h2>
+                    <h2 className="font-clash text-4xl font-black tracking-tight md:text-5xl">READY TO SHARE YOUR EXPERTISE?</h2>
 
-                    <p className="mx-auto max-w-xl font-medium md:text-lg">
-                        Join the P2P skill network today. Set up your profile, list your craft, and claim your starter
-                        credits.
-                    </p>
+                    <p className="mx-auto max-w-xl font-medium md:text-lg">Join the P2P skill network today. Set up your profile, list your craft, and claim your starter credits.</p>
 
-                    <Link href="/auth">
+                    <Link href={isSignedIn ? "/dashboard" : "/auth"}>
                         <Button className="h-auto py-4 text-sm uppercase" variant={"outline"} size={"lg"}>
-                            Create Free Account{" "}
-                            <ArrowRight className="size-4 transition-transform duration-300 group-hover/button:translate-x-2" />
+                            {isSignedIn ? "Continue" : "Create Free Account"} <ArrowRight className="size-4 transition-transform duration-300 group-hover/button:translate-x-2" />
                         </Button>
                     </Link>
                 </section>
@@ -205,8 +168,7 @@ export default function LandingPage() {
                                 </Link>
 
                                 <p className="text-muted-foreground max-w-sm font-mono text-xs leading-relaxed">
-                                    A credit-based peer-to-peer barter network. Teach your craft, earn ledger credits,
-                                    and unlock masterclass skills without cash barriers.
+                                    A credit-based peer-to-peer barter network. Teach your craft, earn ledger credits, and unlock masterclass skills without cash barriers.
                                 </p>
                             </div>
 
@@ -214,26 +176,17 @@ export default function LandingPage() {
                                 <h4 className="font-clash text-sm font-black tracking-wider uppercase">Marketplace</h4>
                                 <ul className="space-y-2 font-mono text-xs">
                                     <li>
-                                        <Link
-                                            href="/skills"
-                                            className="text-muted-foreground hover:text-foreground flex items-center gap-1 hover:underline"
-                                        >
+                                        <Link href="/skills" className="text-muted-foreground hover:text-foreground flex items-center gap-1 hover:underline">
                                             Browse Skills <ArrowUpRight size={12} />
                                         </Link>
                                     </li>
                                     <li>
-                                        <Link
-                                            href="/sessions/new"
-                                            className="text-muted-foreground hover:text-foreground flex items-center gap-1 hover:underline"
-                                        >
+                                        <Link href="/sessions/new" className="text-muted-foreground hover:text-foreground flex items-center gap-1 hover:underline">
                                             Post a Skill <ArrowUpRight size={12} />
                                         </Link>
                                     </li>
                                     <li>
-                                        <Link
-                                            href="/#how-it-works"
-                                            className="text-muted-foreground hover:text-foreground flex items-center gap-1 hover:underline"
-                                        >
+                                        <Link href="/#how-it-works" className="text-muted-foreground hover:text-foreground flex items-center gap-1 hover:underline">
                                             Escrow Model <ArrowUpRight size={12} />
                                         </Link>
                                     </li>
@@ -244,26 +197,17 @@ export default function LandingPage() {
                                 <h4 className="font-clash text-sm font-black tracking-wider uppercase">Network</h4>
                                 <ul className="space-y-2 font-mono text-xs">
                                     <li>
-                                        <Link
-                                            href="/dashboard"
-                                            className="text-muted-foreground hover:text-foreground hover:underline"
-                                        >
+                                        <Link href="/dashboard" className="text-muted-foreground hover:text-foreground hover:underline">
                                             Node Dashboard
                                         </Link>
                                     </li>
                                     <li>
-                                        <Link
-                                            href="/auth?mode=sign-up"
-                                            className="text-muted-foreground hover:text-foreground hover:underline"
-                                        >
+                                        <Link href="/auth?mode=sign-up" className="text-muted-foreground hover:text-foreground hover:underline">
                                             Join Network
                                         </Link>
                                     </li>
                                     <li>
-                                        <Link
-                                            href="/auth?mode=sign-in"
-                                            className="text-muted-foreground hover:text-foreground hover:underline"
-                                        >
+                                        <Link href="/auth?mode=sign-in" className="text-muted-foreground hover:text-foreground hover:underline">
                                             Peer Sign In
                                         </Link>
                                     </li>

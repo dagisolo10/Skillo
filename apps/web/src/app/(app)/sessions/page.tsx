@@ -12,7 +12,8 @@ import { cn } from "cn";
 import { formatDate } from "date-fns";
 import { ArrowUpRight, BookOpen, CheckCircle2, Clock, GraduationCap, XCircle } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
+import { useSearchParams } from "next/navigation";
+import { Suspense, useState } from "react";
 
 type SessionFilter = "all" | "teaching" | "learning";
 
@@ -37,6 +38,16 @@ const STATUS_ICONS = {
 } as const;
 
 export default function SessionsPage() {
+    return (
+        <Suspense fallback={<SessionsSkeleton />}>
+            <SessionsContent />
+        </Suspense>
+    );
+}
+
+function SessionsContent() {
+    const searchParams = useSearchParams();
+    const skillId = searchParams.get("booked_skill_session");
     const [filter, setFilter] = useState<SessionFilter>("all");
     const userQuery = useGetUser();
     const sessionsQuery = useGetSessions();
@@ -53,9 +64,7 @@ export default function SessionsPage() {
                 <div className="w-full max-w-md">
                     <ErrorBlock
                         title="Failed to load sessions"
-                        description={
-                            sessionsQuery.error?.message ?? userQuery.error?.message ?? "Something went wrong."
-                        }
+                        description={sessionsQuery.error?.message ?? userQuery.error?.message ?? "Something went wrong."}
                         onRetry={() => {
                             sessionsQuery.refetch();
                             userQuery.refetch();
@@ -90,21 +99,10 @@ export default function SessionsPage() {
 
                 <div className="flex flex-wrap items-center gap-2">
                     {FILTERS.map(({ value, label }) => {
-                        const count =
-                            value === "teaching"
-                                ? teaching.length
-                                : value === "learning"
-                                  ? learning.length
-                                  : sessions.length;
+                        const count = value === "teaching" ? teaching.length : value === "learning" ? learning.length : sessions.length;
 
                         return (
-                            <Button
-                                key={value}
-                                size={"sm"}
-                                onClick={() => setFilter(value)}
-                                className="h-auto gap-2 px-3 py-1.5 text-xs"
-                                variant={filter === value ? "default" : "outline"}
-                            >
+                            <Button key={value} size={"sm"} onClick={() => setFilter(value)} className="h-auto gap-2 px-3 py-1.5 text-xs" variant={filter === value ? "default" : "outline"}>
                                 {label}
                                 <span className="font-mono text-[10px] opacity-70">{count}</span>
                             </Button>
@@ -115,18 +113,8 @@ export default function SessionsPage() {
                 {visible.length === 0 ? (
                     <EmptyState
                         emoji={filter === "teaching" ? "🎓" : filter === "learning" ? "📚" : "🗂️"}
-                        title={
-                            filter === "teaching"
-                                ? "You are not teaching anything yet"
-                                : filter === "learning"
-                                  ? "You are not learning anything yet"
-                                  : "No sessions yet"
-                        }
-                        description={
-                            filter === "teaching"
-                                ? "List a skill to start offering sessions to other peers."
-                                : "Browse the marketplace and book your first session."
-                        }
+                        title={filter === "teaching" ? "You are not teaching anything yet" : filter === "learning" ? "You are not learning anything yet" : "No sessions yet"}
+                        description={filter === "teaching" ? "List a skill to start offering sessions to other peers." : "Browse the marketplace and book your first session."}
                         action={
                             <Link href="/skills">
                                 <Button className="font-bold">Explore skills</Button>
@@ -136,7 +124,7 @@ export default function SessionsPage() {
                 ) : (
                     <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
                         {visible.map((session) => (
-                            <SessionCard key={session.id} session={session} userId={user?.id} />
+                            <SessionCard key={session.id} session={session} userId={user?.id} searched={session.skillId === skillId} />
                         ))}
                     </div>
                 )}
@@ -145,70 +133,135 @@ export default function SessionsPage() {
     );
 }
 
-function SessionCard({ session, userId }: { session: SessionDetail; userId?: string }) {
+function SessionCard({ session, userId, searched = false }: { session: SessionDetail; userId?: string; searched?: boolean }) {
     const isTeaching = session.mentorId === userId;
-    const partner = isTeaching ? session.learner : session.mentor;
     const StatusIcon = STATUS_ICONS[session.status];
+    const partner = isTeaching ? session.learner : session.mentor;
 
     return (
-        <div className="bg-card shadow-neo flex flex-col justify-between gap-5 p-5">
-            <div className="space-y-4">
-                <div className="flex items-start justify-between gap-3">
-                    <span className="bg-secondary shadow-neo-sm px-2.5 py-1 font-mono text-[10px] font-black uppercase">
-                        {isTeaching ? "Teaching" : "Learning"}
-                    </span>
-                    <span
-                        className={cn(
-                            "inline-flex items-center gap-1.5 border px-2.5 py-1 font-mono text-[10px] font-black uppercase",
-                            STATUS_STYLES[session.status],
-                        )}
-                    >
-                        <StatusIcon size={11} />
-                        {session.status}
-                    </span>
+        <div className="relative">
+            {searched && (
+                <div
+                    aria-hidden="true"
+                    className="pointer-events-none absolute -top-16 -right-5 z-20 size-24 select-none"
+                    style={{ animation: "springBounce 2s cubic-bezier(0.34, 1.56, 0.64, 1) infinite" }}
+                >
+                    <svg viewBox="0 0 120 120" className="text-primary size-full overflow-visible drop-shadow-[2px_2px_0px_#000]" fill="none">
+                        <path
+                            pathLength={100}
+                            strokeWidth="3.5"
+                            stroke="currentColor"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            className="[stroke-dasharray:100] [stroke-dashoffset:100]"
+                            style={{ animation: "drawStrokeLoop 2.2s ease-in-out infinite" }}
+                            d="M 110 8 C 85 5, 52 18, 60 44 C 66 64, 92 56, 86 38 C 80 20, 44 35, 38 78 L 35 102"
+                        />
+                        <path
+                            pathLength={100}
+                            strokeWidth="3.5"
+                            stroke="currentColor"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M 23 89 L 35 104 L 49 91"
+                            className="[stroke-dasharray:100] [stroke-dashoffset:100]"
+                            style={{ animation: "drawArrowLoop 2.2s ease-in-out infinite" }}
+                        />
+                    </svg>
                 </div>
+            )}
 
-                <Link href={`/skills/${session.skillId}`} className="group flex items-start justify-between gap-3">
-                    <div className="min-w-0 space-y-1">
-                        <span className="text-muted-foreground font-mono text-[10px] font-bold uppercase">
-                            {session.skill.category}
+            <div className={cn("bg-card shadow-neo flex flex-col justify-between gap-5 p-5 transition-transform duration-300", searched && "-translate-y-0.5 ring-2 ring-black")}>
+                <div className="space-y-4">
+                    <div className="flex items-start justify-between gap-3">
+                        <span className="bg-secondary shadow-neo-sm px-2.5 py-1 font-mono text-[10px] font-black uppercase">{isTeaching ? "Teaching" : "Learning"}</span>
+                        <span className={cn("inline-flex items-center gap-1.5 border px-2.5 py-1 font-mono text-[10px] font-black uppercase", STATUS_STYLES[session.status])}>
+                            <StatusIcon size={11} />
+                            {session.status}
                         </span>
-                        <h3 className="font-clash flex items-center gap-1 text-lg leading-snug font-black">
-                            <span className="truncate">{session.skill.name}</span>
-                            <ArrowUpRight
-                                size={14}
-                                className="shrink-0 opacity-0 transition-opacity group-hover:opacity-100"
-                            />
-                        </h3>
                     </div>
-                    <span className="font-clash shrink-0 text-2xl leading-none">{session.skill.emoji}</span>
-                </Link>
 
-                <div className="flex items-center gap-3 border-t-2 border-black pt-4">
-                    <div className="bg-primary shadow-neo-sm shrink-0 p-0.5">
-                        <UserAvatar seed={partner.avatarSeed} size={40} />
-                    </div>
-                    <div className="min-w-0">
-                        <p className="text-muted-foreground font-mono text-[9px] font-black tracking-wider uppercase">
-                            {isTeaching ? "Learner" : "Mentor"}
-                        </p>
-                        <p className="font-clash truncate text-sm font-black">{partner.name}</p>
-                        <p className="text-muted-foreground truncate font-mono text-[10px]">@{partner.username}</p>
+                    <Link href={`/skills/${session.skillId}`} className="group flex items-start justify-between gap-3">
+                        <div className="min-w-0 space-y-1">
+                            <span className="text-muted-foreground font-mono text-[10px] font-bold uppercase">{session.skill.category}</span>
+                            <h3 className="font-clash flex items-center gap-1 text-lg leading-snug font-black">
+                                <span className="truncate">{session.skill.name}</span>
+                                <ArrowUpRight size={14} className="shrink-0 opacity-0 transition-opacity group-hover:opacity-100" />
+                            </h3>
+                        </div>
+                        <span className="font-clash shrink-0 text-2xl leading-none">{session.skill.emoji}</span>
+                    </Link>
+
+                    <div className="flex items-center gap-3 border-t-2 border-black pt-4">
+                        <div className="bg-primary shadow-neo-sm shrink-0 p-0.5">
+                            <UserAvatar seed={partner.avatarSeed} size={40} />
+                        </div>
+                        <div className="min-w-0">
+                            <p className="text-muted-foreground font-mono text-[9px] font-black tracking-wider uppercase">{isTeaching ? "Learner" : "Mentor"}</p>
+                            <p className="font-clash truncate text-sm font-black">{partner.name}</p>
+                            <p className="text-muted-foreground truncate font-mono text-[10px]">@{partner.username}</p>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <div className="text-muted-foreground flex items-center justify-between gap-2 font-mono text-[10px] font-bold">
-                <span className="flex items-center gap-1.5">
-                    <Clock size={11} /> Requested at {formatDate(session.createdAt, "p d MMM yyyy")}
-                </span>
-                {session.acceptedAt && (
-                    <span className="text-success">Accepted {formatDate(session.acceptedAt, "d MMM")}</span>
-                )}
+                <div className="text-muted-foreground flex items-center justify-between gap-2 font-mono text-[10px] font-bold">
+                    <span className="flex items-center gap-1.5">
+                        <Clock size={11} /> Requested at {formatDate(session.createdAt, "p d MMM yyyy")}
+                    </span>
+                    {session.acceptedAt && <span className="text-success">Accepted {formatDate(session.acceptedAt, "d MMM")}</span>}
+                </div>
             </div>
         </div>
     );
 }
+// function SessionCard({ session, userId }: { session: SessionDetail; userId?: string }) {
+//     const isTeaching = session.mentorId === userId;
+//     const partner = isTeaching ? session.learner : session.mentor;
+//     const StatusIcon = STATUS_ICONS[session.status];
+
+//     return (
+//         <div className="bg-card shadow-neo flex flex-col justify-between gap-5 p-5">
+//             <div className="space-y-4">
+//                 <div className="flex items-start justify-between gap-3">
+//                     <span className="bg-secondary shadow-neo-sm px-2.5 py-1 font-mono text-[10px] font-black uppercase">{isTeaching ? "Teaching" : "Learning"}</span>
+//                     <span className={cn("inline-flex items-center gap-1.5 border px-2.5 py-1 font-mono text-[10px] font-black uppercase", STATUS_STYLES[session.status])}>
+//                         <StatusIcon size={11} />
+//                         {session.status}
+//                     </span>
+//                 </div>
+
+//                 <Link href={`/skills/${session.skillId}`} className="group flex items-start justify-between gap-3">
+//                     <div className="min-w-0 space-y-1">
+//                         <span className="text-muted-foreground font-mono text-[10px] font-bold uppercase">{session.skill.category}</span>
+//                         <h3 className="font-clash flex items-center gap-1 text-lg leading-snug font-black">
+//                             <span className="truncate">{session.skill.name}</span>
+//                             <ArrowUpRight size={14} className="shrink-0 opacity-0 transition-opacity group-hover:opacity-100" />
+//                         </h3>
+//                     </div>
+//                     <span className="font-clash shrink-0 text-2xl leading-none">{session.skill.emoji}</span>
+//                 </Link>
+
+//                 <div className="flex items-center gap-3 border-t-2 border-black pt-4">
+//                     <div className="bg-primary shadow-neo-sm shrink-0 p-0.5">
+//                         <UserAvatar seed={partner.avatarSeed} size={40} />
+//                     </div>
+//                     <div className="min-w-0">
+//                         <p className="text-muted-foreground font-mono text-[9px] font-black tracking-wider uppercase">{isTeaching ? "Learner" : "Mentor"}</p>
+//                         <p className="font-clash truncate text-sm font-black">{partner.name}</p>
+//                         <p className="text-muted-foreground truncate font-mono text-[10px]">@{partner.username}</p>
+//                     </div>
+//                 </div>
+//             </div>
+
+//             <div className="text-muted-foreground flex items-center justify-between gap-2 font-mono text-[10px] font-bold">
+//                 <span className="flex items-center gap-1.5">
+//                     <Clock size={11} /> Requested at {formatDate(session.createdAt, "p d MMM yyyy")}
+//                 </span>
+//                 {session.acceptedAt && <span className="text-success">Accepted {formatDate(session.acceptedAt, "d MMM")}</span>}
+//             </div>
+//         </div>
+//     );
+// }
 
 function SessionsSkeleton() {
     return (

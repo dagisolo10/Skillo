@@ -10,7 +10,7 @@ export const queryKeys = {
         username: (username: string) => [...queryRoots.user, "username", username] as const,
     },
     skill: {
-        paginated: () => [...queryRoots.skill],
+        paginated: () => [...queryRoots.skill, "paginated"] as const,
         detail: (id: string) => [...queryRoots.skill, "detail", id] as const,
     },
     session: {

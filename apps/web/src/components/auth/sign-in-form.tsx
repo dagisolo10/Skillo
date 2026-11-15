@@ -47,26 +47,13 @@ export function SignInForm() {
 
     return (
         <div className="space-y-3">
-            {authError && (
-                <div className="shadow-neo-sm border-destructive bg-destructive/10 text-destructive border-2 p-2.5 font-mono text-xs font-bold">
-                    ⚠️ {authError}
-                </div>
-            )}
+            {authError && <div className="shadow-neo-sm border-destructive bg-destructive/10 text-destructive border-2 p-2.5 font-mono text-xs font-bold">⚠️ {authError}</div>}
 
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-3">
                 <EmailInput errors={errors} register={register("email")} />
-                <PasswordInput
-                    setShowPassword={setShowPassword}
-                    showPassword={showPassword}
-                    errors={errors}
-                    register={register("password")}
-                />
+                <PasswordInput setShowPassword={setShowPassword} showPassword={showPassword} errors={errors} register={register("password")} />
 
-                <Button
-                    type="submit"
-                    disabled={isSubmitting}
-                    className="group mt-2 w-full font-black tracking-wider uppercase"
-                >
+                <Button type="submit" disabled={isSubmitting} className="group mt-2 w-full font-black tracking-wider uppercase">
                     {isSubmitting ? "Processing..." : "Sign In "}
                     <ArrowRight className="size-4 transition-transform duration-300 group-hover/button:translate-x-2" />
                 </Button>
