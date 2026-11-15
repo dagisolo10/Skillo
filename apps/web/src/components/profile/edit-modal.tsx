@@ -4,11 +4,12 @@ import { UserAvatar } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input, Label, Textarea } from "@/components/ui/input";
 import { toast } from "@/components/ui/toast";
-import { useUpdateUser } from "@/hooks/tan-stack/user";
+import useDebounce from "@/hooks/custom/use-debounce";
+import { useIsUsernameAvailable, useUpdateUser } from "@/hooks/tan-stack/user";
 import { User } from "@/types/models";
 import { slugifyUsername } from "@/utils/helper-functions";
 import { cn } from "cn";
-import { Check, Edit3, Eye } from "lucide-react";
+import { Check, Edit3, Eye, Loader2, X } from "lucide-react";
 import { SubmitEvent, useState } from "react";
 import z from "zod";
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "../ui/dialog";
@@ -42,8 +43,29 @@ export default function ProfileModal({ user, open, onOpenChange }: ProfileModalP
     const [avatarSeed, setAvatarSeed] = useState(user.avatarSeed);
     const [previewSeed, setPreviewSeed] = useState<string | null>(null);
 
+    const normalizedUsername = slugifyUsername(username);
+    const debouncedUsername = useDebounce(normalizedUsername, 1000);
+
+    const isUnchangedUsername = debouncedUsername === user.username;
+    const canCheckUsername = debouncedUsername.length >= 3 && !isUnchangedUsername;
+    const usernameAvailableQuery = useIsUsernameAvailable(debouncedUsername, { enabled: canCheckUsername, retry: 0 });
+    const usernameTaken = normalizedUsername === debouncedUsername && canCheckUsername && usernameAvailableQuery.data === false;
+    const usernameCheckPending =
+        normalizedUsername.length >= 3 &&
+        normalizedUsername !== user.username &&
+        (normalizedUsername !== debouncedUsername || usernameAvailableQuery.isPending || usernameAvailableQuery.data === undefined);
+
     function saveChanges(e: SubmitEvent<HTMLFormElement>) {
         e.preventDefault();
+
+        if (usernameTaken) {
+            toast.add({
+                type: "error",
+                title: "Username Unavailable",
+                description: "That username is already taken. Pick another one.",
+            });
+            return;
+        }
 
         const result = userUpdateSchema.safeParse({ bio, name, username, avatarSeed });
 
@@ -105,10 +127,28 @@ export default function ProfileModal({ user, open, onOpenChange }: ProfileModalP
                                 <Label htmlFor="profile-username" className="text-xs tracking-wider uppercase">
                                     Username
                                 </Label>
-                                <Input id="profile-username" maxLength={30} value={username} onChange={(e) => setUsername(e.target.value)} />
+                                <div className="relative">
+                                    <Input id="profile-username" maxLength={30} value={username} onChange={(e) => setUsername(e.target.value)} className="pr-8" />
+                                    <div className="absolute top-1/2 right-2.5 -translate-y-1/2">
+                                        {canCheckUsername && usernameAvailableQuery.isPending ? (
+                                            <Loader2 size={14} className="text-muted-foreground animate-spin" />
+                                        ) : canCheckUsername ? (
+                                            usernameAvailableQuery.data ? (
+                                                <Check size={14} className="text-success" />
+                                            ) : (
+                                                <X size={14} className="text-destructive" />
+                                            )
+                                        ) : null}
+                                    </div>
+                                </div>
                                 <p className="text-muted-foreground mt-1 font-mono text-[10px] break-all">
-                                    {process.env.NEXT_PUBLIC_WEBSITE_URL}/u/{slugifyUsername(username)}
+                                    {process.env.NEXT_PUBLIC_WEBSITE_URL}/u/{normalizedUsername}
                                 </p>
+                                {canCheckUsername && usernameAvailableQuery.data !== undefined && (
+                                    <p role="status" aria-live="polite" className={cn("mt-1 font-mono text-[10px] font-bold", usernameTaken ? "text-destructive" : "text-success")}>
+                                        {usernameTaken ? "Username is already taken" : "Username is available!"}
+                                    </p>
+                                )}
                             </div>
                         </div>
 
@@ -158,8 +198,8 @@ export default function ProfileModal({ user, open, onOpenChange }: ProfileModalP
                                 </Button>
                             }
                         />
-                        <Button type="submit" disabled={userMut.isPending} className="shadow-neo-sm active-sink-sm gap-2 px-6 font-bold">
-                            {userMut.isPending ? "Saving..." : "Save Changes"}
+                        <Button type="submit" disabled={userMut.isPending || usernameTaken || usernameCheckPending} className="shadow-neo-sm active-sink-sm gap-2 px-6 font-bold">
+                            {userMut.isPending ? "Saving..." : usernameCheckPending ? "Checking username..." : "Save Changes"}
                         </Button>
                     </DialogFooter>
                 </form>
