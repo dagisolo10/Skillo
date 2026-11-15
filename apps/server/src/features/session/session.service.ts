@@ -1,8 +1,9 @@
-import { PrismaService } from "@/common/prisma/prisma.service.js";
-import { RequestService } from "@/common/request/request.service.js";
-import { CreateSessionDto, SessionDetail } from "@/features/session/dto/session.dto.js";
 import { BadRequestException, ConflictException, Injectable, NotFoundException } from "@nestjs/common";
+import { CreateSessionDto, SessionDetail } from "@/features/session/dto/session.dto.js";
+import { RequestService } from "@/common/request/request.service.js";
+import { PrismaService } from "@/common/prisma/prisma.service.js";
 import { Prisma, SessionStatus } from "@prisma/client";
+
 
 const OPEN_SESSION_CONFLICT = "You already have an open session for this skill";
 
@@ -103,5 +104,23 @@ export class SessionService {
             orderBy: [{ createdAt: "desc" }, { id: "asc" }],
             include: sessionInclude,
         });
+    }
+
+    async getSession(id: string): Promise<SessionDetail> {
+        const userId = this.requestService.getUserId();
+
+        const session = await this.prisma.session.findFirst({
+            where: {
+                id,
+                OR: [{ mentorId: userId }, { learnerId: userId }],
+            },
+            include: sessionInclude,
+        });
+
+        if (!session) {
+            throw new NotFoundException("Session not found");
+        }
+
+        return session;
     }
 }

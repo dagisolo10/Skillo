@@ -1,5 +1,6 @@
 "use client";
 
+import { SessionStatusBadge } from "@/components/sessions/session-status";
 import { UserAvatar } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
@@ -7,10 +8,10 @@ import { ErrorBlock } from "@/components/ui/error-block";
 import { PageHeader } from "@/components/ui/page-header";
 import { useGetSessions } from "@/hooks/tan-stack/session";
 import { useGetUser } from "@/hooks/tan-stack/user";
-import { SessionDetail, SessionStatus } from "@/types/models";
+import { SessionDetail } from "@/types/models";
 import { cn } from "cn";
 import { formatDate } from "date-fns";
-import { ArrowUpRight, BookOpen, CheckCircle2, Clock, GraduationCap, XCircle } from "lucide-react";
+import { ArrowUpRight, BookOpen, Clock } from "lucide-react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Suspense, useState } from "react";
@@ -22,20 +23,6 @@ const FILTERS: { value: SessionFilter; label: string }[] = [
     { value: "teaching", label: "Teaching" },
     { value: "learning", label: "Learning" },
 ];
-
-const STATUS_STYLES: Record<SessionStatus, string> = {
-    PENDING: "border-amber-500/20 bg-amber-500/10 text-amber-600",
-    ACTIVE: "border-success/20 bg-success/10 text-success",
-    COMPLETED: "border-foreground/20 bg-muted text-muted-foreground",
-    CANCELLED: "border-destructive/20 bg-destructive/10 text-destructive",
-};
-
-const STATUS_ICONS = {
-    PENDING: Clock,
-    ACTIVE: CheckCircle2,
-    COMPLETED: GraduationCap,
-    CANCELLED: XCircle,
-} as const;
 
 export default function SessionsPage() {
     return (
@@ -135,7 +122,6 @@ function SessionsContent() {
 
 function SessionCard({ session, userId, searched = false }: { session: SessionDetail; userId?: string; searched?: boolean }) {
     const isTeaching = session.mentorId === userId;
-    const StatusIcon = STATUS_ICONS[session.status];
     const partner = isTeaching ? session.learner : session.mentor;
 
     return (
@@ -175,10 +161,7 @@ function SessionCard({ session, userId, searched = false }: { session: SessionDe
                 <div className="space-y-4">
                     <div className="flex items-start justify-between gap-3">
                         <span className="bg-secondary shadow-neo-sm px-2.5 py-1 font-mono text-[10px] font-black uppercase">{isTeaching ? "Teaching" : "Learning"}</span>
-                        <span className={cn("inline-flex items-center gap-1.5 border px-2.5 py-1 font-mono text-[10px] font-black uppercase", STATUS_STYLES[session.status])}>
-                            <StatusIcon size={11} />
-                            {session.status}
-                        </span>
+                        <SessionStatusBadge status={session.status} />
                     </div>
 
                     <Link href={`/skills/${session.skillId}`} className="group flex items-start justify-between gap-3">
@@ -204,64 +187,22 @@ function SessionCard({ session, userId, searched = false }: { session: SessionDe
                     </div>
                 </div>
 
-                <div className="text-muted-foreground flex items-center justify-between gap-2 font-mono text-[10px] font-bold">
-                    <span className="flex items-center gap-1.5">
-                        <Clock size={11} /> Requested at {formatDate(session.createdAt, "p d MMM yyyy")}
-                    </span>
-                    {session.acceptedAt && <span className="text-success">Accepted {formatDate(session.acceptedAt, "d MMM")}</span>}
+                <div className="space-y-2 border-t-2 border-black pt-3">
+                    <div className="text-muted-foreground flex items-center justify-between gap-2 font-mono text-[10px] font-bold">
+                        <span className="flex items-center gap-1.5">
+                            <Clock size={11} /> Requested at {formatDate(session.createdAt, "p d MMM yyyy")}
+                        </span>
+                        {session.acceptedAt && <span className="text-success">Accepted {formatDate(session.acceptedAt, "d MMM")}</span>}
+                    </div>
+                    <Link href={`/sessions/${session.id}`} className="group/link inline-flex items-center gap-1 font-mono text-[10px] font-black uppercase underline underline-offset-4">
+                        View session
+                        <ArrowUpRight size={11} className="transition-transform group-hover/link:translate-x-0.5 group-hover/link:-translate-y-0.5" />
+                    </Link>
                 </div>
             </div>
         </div>
     );
 }
-// function SessionCard({ session, userId }: { session: SessionDetail; userId?: string }) {
-//     const isTeaching = session.mentorId === userId;
-//     const partner = isTeaching ? session.learner : session.mentor;
-//     const StatusIcon = STATUS_ICONS[session.status];
-
-//     return (
-//         <div className="bg-card shadow-neo flex flex-col justify-between gap-5 p-5">
-//             <div className="space-y-4">
-//                 <div className="flex items-start justify-between gap-3">
-//                     <span className="bg-secondary shadow-neo-sm px-2.5 py-1 font-mono text-[10px] font-black uppercase">{isTeaching ? "Teaching" : "Learning"}</span>
-//                     <span className={cn("inline-flex items-center gap-1.5 border px-2.5 py-1 font-mono text-[10px] font-black uppercase", STATUS_STYLES[session.status])}>
-//                         <StatusIcon size={11} />
-//                         {session.status}
-//                     </span>
-//                 </div>
-
-//                 <Link href={`/skills/${session.skillId}`} className="group flex items-start justify-between gap-3">
-//                     <div className="min-w-0 space-y-1">
-//                         <span className="text-muted-foreground font-mono text-[10px] font-bold uppercase">{session.skill.category}</span>
-//                         <h3 className="font-clash flex items-center gap-1 text-lg leading-snug font-black">
-//                             <span className="truncate">{session.skill.name}</span>
-//                             <ArrowUpRight size={14} className="shrink-0 opacity-0 transition-opacity group-hover:opacity-100" />
-//                         </h3>
-//                     </div>
-//                     <span className="font-clash shrink-0 text-2xl leading-none">{session.skill.emoji}</span>
-//                 </Link>
-
-//                 <div className="flex items-center gap-3 border-t-2 border-black pt-4">
-//                     <div className="bg-primary shadow-neo-sm shrink-0 p-0.5">
-//                         <UserAvatar seed={partner.avatarSeed} size={40} />
-//                     </div>
-//                     <div className="min-w-0">
-//                         <p className="text-muted-foreground font-mono text-[9px] font-black tracking-wider uppercase">{isTeaching ? "Learner" : "Mentor"}</p>
-//                         <p className="font-clash truncate text-sm font-black">{partner.name}</p>
-//                         <p className="text-muted-foreground truncate font-mono text-[10px]">@{partner.username}</p>
-//                     </div>
-//                 </div>
-//             </div>
-
-//             <div className="text-muted-foreground flex items-center justify-between gap-2 font-mono text-[10px] font-bold">
-//                 <span className="flex items-center gap-1.5">
-//                     <Clock size={11} /> Requested at {formatDate(session.createdAt, "p d MMM yyyy")}
-//                 </span>
-//                 {session.acceptedAt && <span className="text-success">Accepted {formatDate(session.acceptedAt, "d MMM")}</span>}
-//             </div>
-//         </div>
-//     );
-// }
 
 function SessionsSkeleton() {
     return (
@@ -281,7 +222,7 @@ function SessionsSkeleton() {
 
                 <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
                     {Array.from({ length: 6 }).map((_, index) => (
-                        <div key={index} className="bg-card shadow-neo space-y-5 border-2 border-black p-5">
+                        <div key={index} className="bg-card shadow-neo space-y-5 p-5">
                             <div className="flex justify-between">
                                 <div className="bg-muted h-6 w-20" />
                                 <div className="bg-muted h-6 w-24" />

@@ -1,6 +1,6 @@
 import { CreateSessionDto, SessionDetail } from "@/features/session/dto/session.dto.js";
 import { SessionService } from "@/features/session/session.service.js";
-import { Body, Controller, Get, Post } from "@nestjs/common";
+import { Body, Controller, Get, Param, Post } from "@nestjs/common";
 
 @Controller("session")
 export class SessionController {
@@ -14,5 +14,10 @@ export class SessionController {
     @Get()
     getSessions(): Promise<SessionDetail[]> {
         return this.sessionService.getSessions();
+    }
+
+    @Get(":id")
+    getSession(@Param("id") id: string): Promise<SessionDetail> {
+        return this.sessionService.getSession(id);
     }
 }
