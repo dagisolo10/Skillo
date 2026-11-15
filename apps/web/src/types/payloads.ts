@@ -1,3 +1,5 @@
+import type { SkillCategory } from "@/types/models";
+
 export type UpdateUserPayload = Partial<{
     name: string;
     username: string;
@@ -8,3 +10,12 @@ export type UpdateUserPayload = Partial<{
 export type CreateSessionPayload = {
     skillId: string;
 };
+
+export type CreateSkillPayload = {
+    name: string;
+    emoji?: string;
+    description: string;
+    category: SkillCategory;
+};
+
+export type UpdateSkillPayload = Partial<CreateSkillPayload>;

@@ -1,3 +1,5 @@
-import { SkillCategoryFilter } from "@/types/models";
+import { SkillCategory, SkillCategoryFilter } from "@/types/models";
 
-export const CATEGORIES: SkillCategoryFilter[] = ["All", "Tech", "Music", "Design", "Languages", "Wellness", "Crafts", "Other"];
+export const SKILL_CATEGORIES: SkillCategory[] = ["Tech", "Music", "Design", "Languages", "Wellness", "Crafts", "Other"];
+
+export const CATEGORIES: SkillCategoryFilter[] = ["All", ...SKILL_CATEGORIES];
