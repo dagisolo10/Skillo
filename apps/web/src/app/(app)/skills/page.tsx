@@ -107,7 +107,7 @@ export default function SkillsPage() {
                                 <Button
                                     onClick={() => skillsQuery.fetchNextPage()}
                                     disabled={skillsQuery.isFetchingNextPage}
-                                    className="shadow-neo-sm active-sink-sm border-2 border-black px-6 py-3 font-bold"
+                                    className="shadow-neo-sm active-sink-sm px-6 py-3 font-bold"
                                 >
                                     {skillsQuery.isFetchingNextPage ? (
                                         <>

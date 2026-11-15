@@ -102,7 +102,7 @@ export default function SkillDetailContent({ id }: { id: string }) {
                 </Link>
 
                 <div className="grid grid-cols-1 gap-8 lg:grid-cols-12">
-                    <div className="bg-card shadow-neo space-y-8 border-2 border-black p-6 lg:col-span-8 lg:p-8">
+                    <div className="bg-card shadow-neo space-y-8 p-6 lg:col-span-8 lg:p-8">
                         <div className="space-y-5">
                             <div className="flex flex-wrap items-center gap-3">
                                 <span className="bg-secondary border-2 border-black px-2.5 py-1 font-mono text-[10px] font-black uppercase">{skill.category}</span>
@@ -130,7 +130,7 @@ export default function SkillDetailContent({ id }: { id: string }) {
                     </div>
 
                     <div className="space-y-6 lg:col-span-4">
-                        <div className="bg-card shadow-neo space-y-5 border-2 border-black p-6">
+                        <div className="bg-card shadow-neo space-y-5 p-6">
                             <span className="text-muted-foreground block font-mono text-xs font-black tracking-wider uppercase">Your mentor</span>
 
                             <div className="flex items-center gap-3">
@@ -179,7 +179,7 @@ export default function SkillDetailContent({ id }: { id: string }) {
                             )}
                         </div>
 
-                        <div className="bg-primary shadow-neo space-y-3 border-2 border-black p-6">
+                        <div className="bg-primary shadow-neo space-y-3 p-6">
                             <span className="bg-card shadow-neo-sm inline-block px-2 py-0.5 font-mono text-[10px] font-black tracking-widest uppercase">Have a skill to trade?</span>
                             <p className="font-mono text-xs leading-relaxed font-bold">Teach a session and earn that credit back — the network runs on reciprocity.</p>
                             <Link href="/skills" className="inline-block font-mono text-xs font-black uppercase underline underline-offset-4">
@@ -218,7 +218,7 @@ function SkillDetailSkeleton() {
                 <div className="bg-muted h-4 w-32" />
 
                 <div className="grid grid-cols-1 gap-8 lg:grid-cols-12">
-                    <div className="bg-card shadow-neo space-y-8 border-2 border-black p-6 lg:col-span-8 lg:p-8">
+                    <div className="bg-card shadow-neo space-y-8 p-6 lg:col-span-8 lg:p-8">
                         <div className="space-y-5">
                             <div className="bg-muted h-5 w-28 border border-black" />
                             <div className="bg-muted h-12 w-3/4 border border-black" />
@@ -242,7 +242,7 @@ function SkillDetailSkeleton() {
                     </div>
 
                     <div className="space-y-6 lg:col-span-4">
-                        <div className="bg-card shadow-neo space-y-5 border-2 border-black p-6">
+                        <div className="bg-card shadow-neo space-y-5 p-6">
                             <div className="bg-muted h-3 w-24" />
                             <div className="flex items-center gap-3">
                                 <div className="bg-muted size-14 border border-black" />
@@ -255,7 +255,7 @@ function SkillDetailSkeleton() {
                             <div className="bg-muted h-10 w-full" />
                         </div>
 
-                        <div className="bg-primary shadow-neo h-48 border-2 border-black" />
+                        <div className="bg-primary shadow-neo h-48" />
                     </div>
                 </div>
             </div>

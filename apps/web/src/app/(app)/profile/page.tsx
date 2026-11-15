@@ -181,7 +181,7 @@ function ProfileContent({ user }: { user: User }) {
                             <p className="border-t-2 border-black/20 pt-3 font-mono text-xs font-bold">Available for booking masterclasses & learning slots.</p>
                         </div>
 
-                        <div className="bg-card shadow-neo grid grid-cols-3 divide-x-2 divide-black border-2 border-black">
+                        <div className="bg-card shadow-neo grid grid-cols-3 divide-x-2 divide-black">
                             <StatCell icon={BookOpen} label="Taught" value="3" />
                             <StatCell icon={Sparkles} label="Learned" value="2" />
                             <StatCell icon={Zap} label="Rating" value="4.9" />
@@ -190,7 +190,7 @@ function ProfileContent({ user }: { user: User }) {
                 </div>
 
                 <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
-                    <div className="bg-card shadow-neo space-y-5 border-2 border-black p-6">
+                    <div className="bg-card shadow-neo space-y-5 p-6">
                         <div className="flex items-center justify-between border-b-2 border-black pb-4">
                             <h2 className="font-clash flex items-center gap-2 text-xl font-black tracking-tight">
                                 <BookOpen size={20} className="text-primary" /> Skills You Teach
@@ -222,7 +222,7 @@ function ProfileContent({ user }: { user: User }) {
                                     </Button>
                                 </div>
                             ) : skillsQuery.items.length === 0 ? (
-                                <div className="bg-background shadow-neo-sm border-2 border-black p-5 text-center">
+                                <div className="bg-background shadow-neo-sm p-5 text-center">
                                     <p className="font-mono text-xs font-bold">You have not listed any skills yet.</p>
                                     <p className="text-muted-foreground mt-1 font-mono text-[10px]">Add one to start teaching.</p>
                                 </div>
@@ -242,7 +242,7 @@ function ProfileContent({ user }: { user: User }) {
                         </div>
                     </div>
 
-                    <div className="bg-card shadow-neo space-y-5 border-2 border-black p-6">
+                    <div className="bg-card shadow-neo space-y-5 p-6">
                         <div className="flex items-center justify-between border-b-2 border-black pb-4">
                             <h2 className="font-clash flex items-center gap-2 text-xl font-black tracking-tight">
                                 <Sparkles size={20} className="text-secondary" /> Skills You Want
@@ -330,7 +330,7 @@ function ProfileContent({ user }: { user: User }) {
 
 function OwnedSkillItem({ skill, onEdit, onDelete }: { skill: SkillDetail; onEdit: () => void; onDelete: () => void }) {
     return (
-        <div className="bg-background shadow-neo-sm flex items-start justify-between gap-3 border-2 border-black p-4">
+        <div className="bg-background shadow-neo-sm flex items-start justify-between gap-3 p-4">
             <div className="min-w-0 flex-1 space-y-1">
                 <div className="flex items-center gap-2">
                     <Link href={`/skills/${skill.id}`} className="font-clash flex items-center gap-2 truncate text-base font-black underline-offset-4 hover:underline">
