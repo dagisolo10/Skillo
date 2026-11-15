@@ -17,22 +17,25 @@ export function useGetSessions(options?: TQueryOptions<SessionDetail[]>) {
 }
 
 export function useGetSession(id: string, options?: TQueryOptions<SessionDetail>) {
+    const { user } = useAuth();
+
     return useQuery({
         ...options,
         enabled: !!id,
-        queryKey: queryKeys.session.detail(id),
+        queryKey: queryKeys.session.detail(user?.id, id),
         queryFn: async () => requestApi(() => api.get<SessionDetail>(`/session/${encodeURIComponent(id)}`)),
     });
 }
 
 export function useCreateSession(options?: TMutationOptions<SessionDetail, CreateSessionPayload>) {
+    const { user } = useAuth();
     const qc = useQueryClient();
 
     return useMutation({
         ...options,
         mutationFn: async (data) => requestApi(() => api.post<SessionDetail>("/session", data)),
         onSuccess(session, ...args) {
-            qc.setQueryData(queryKeys.session.detail(session.id), session);
+            qc.setQueryData(queryKeys.session.detail(user?.id, session.id), session);
             qc.invalidateQueries({ queryKey: queryKeys.session.root() });
             options?.onSuccess?.(session, ...args);
         },
