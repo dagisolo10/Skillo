@@ -1,0 +1,26 @@
+{
+    "name": "@skillo/socket-events",
+    "version": "1.0.0",
+    "license": "ISC",
+    "type": "module",
+    "description": "",
+    "main": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "scripts": {
+        "dev": "tsc --watch",
+        "build": "tsc -p tsconfig.json",
+        "bu": "tsc && echo ✅ Build Complete!"
+    },
+    "exports": {
+        ".": {
+            "import": "./dist/index.js",
+            "types": "./dist/index.d.ts"
+        }
+    },
+    "files": [
+        "dist"
+    ],
+    "devDependencies": {
+        "typescript": "^5.9.3"
+    }
+}

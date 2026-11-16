@@ -1,8 +1,9 @@
 "use client";
 
 import { useAuth } from "@/contexts/auth-context";
-import { ClientToServerEvents, SocketIoContext, TypedSocket } from "@/contexts/socket.io-context";
+import { SocketIoContext, TypedSocket } from "@/contexts/socket.io-context";
 import { SERVER_URL } from "@/lib/api/axios";
+import { ClientToServerEvents } from "@skillo/socket-events";
 import { Dispatch, PropsWithChildren, SetStateAction, useCallback, useEffect, useRef, useState } from "react";
 import { io } from "socket.io-client";
 

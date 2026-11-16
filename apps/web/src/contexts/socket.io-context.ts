@@ -1,14 +1,8 @@
 "use client";
 
+import { ClientToServerEvents, ServerToClientEvents } from "@skillo/socket-events";
 import { createContext, useContext } from "react";
 import { Socket } from "socket.io-client";
-
-export interface ClientToServerEvents {
-    "chat:go": () => void;
-}
-export interface ServerToClientEvents {
-    "chat:go": () => void;
-}
 
 export type TypedSocket = Socket<ServerToClientEvents, ClientToServerEvents>;
 
