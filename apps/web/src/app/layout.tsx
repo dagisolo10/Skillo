@@ -3,6 +3,7 @@ import "@/app/globals.css";
 import { Toaster } from "@/components/ui/toast";
 import { clashDisplay, plusJakartaSans } from "@/constants/fonts";
 import AuthProvider from "@/providers/auth-provider";
+import SocketIoProvider from "@/providers/socket.io-provider";
 import TanStackQueryProvider from "@/providers/tan-stack-provider";
 import { cn } from "cn";
 import type { Metadata } from "next";
@@ -17,10 +18,12 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <html lang="en" data-scroll-behavior="smooth" className={cn("min-h-screen", clashDisplay.variable, plusJakartaSans.variable)}>
             <TanStackQueryProvider>
                 <AuthProvider>
-                    <body className="relative h-full">
-                        {children}
-                        <Toaster />
-                    </body>
+                    <SocketIoProvider>
+                        <body className="relative h-full">
+                            {children}
+                            <Toaster />
+                        </body>
+                    </SocketIoProvider>
                 </AuthProvider>
             </TanStackQueryProvider>
         </html>

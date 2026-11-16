@@ -1,3 +1,5 @@
+import "dotenv/config";
+
 import { SocketIoService } from "@/common/socket.io/socket.io.service.js";
 import { SupabaseService } from "@/common/supabase/supabase.service.js";
 import { TypedServer, TypedSocket } from "@/types/socket.io-type.js";

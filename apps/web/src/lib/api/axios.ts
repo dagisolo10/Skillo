@@ -1,6 +1,6 @@
 import { AxiosResponse, create, isAxiosError } from "axios";
 
-const SERVER_URL = "http://localhost:3000";
+export const SERVER_URL = process.env.NEXT_PUBLIC_SERVER_URL ?? "http://localhost:3000";
 
 export const api = create({
     baseURL: SERVER_URL,
