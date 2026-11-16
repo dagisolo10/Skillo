@@ -126,6 +126,10 @@ export class SessionService {
     async acceptOrRejectSession(id: string, action: "accept" | "reject"): Promise<SessionDetail> {
         const userId = this.requestService.getUserId();
 
+        // TODO: When credit escrow is implemented, reserve one learner credit here before setting
+        // status to ACTIVE. The UI blurbs mention escrow, but the credit transaction system is not
+        // yet built (no CreditTransaction model or Prisma extensions).
+
         const updated = await this.prisma.$transaction(async (tx) => {
             const result = await tx.session.updateMany({
                 where: {
