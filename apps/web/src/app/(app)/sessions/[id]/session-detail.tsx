@@ -3,6 +3,7 @@
 import { SESSION_STATUS_META, SessionStatusBadge } from "@/components/sessions/session-status";
 import { UserAvatar } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
+import { EmptyState } from "@/components/ui/empty-state";
 import { ErrorBlock } from "@/components/ui/error-block";
 import { useAuth } from "@/contexts/auth-context";
 import { useAcceptOrRejectSession, useGetSession } from "@/hooks/tan-stack/session";
@@ -21,9 +22,31 @@ const STATUS_BLURBS: Record<SessionStatus, string> = {
 };
 
 export default function SessionDetailContent({ id }: { id: string }) {
-    const { user } = useAuth();
+    const { user, isLoading, isSignedIn } = useAuth();
     const sessionQuery = useGetSession(id);
     const acceptReject = useAcceptOrRejectSession();
+
+    if (isLoading) {
+        return <SessionDetailSkeleton />;
+    }
+
+    if (!isSignedIn) {
+        return (
+            <div className="bg-background flex min-h-screen w-full items-center justify-center p-6">
+                <EmptyState
+                    className="w-full max-w-md"
+                    emoji="🔒"
+                    title="Sign in to view this session"
+                    description="Sessions are private to the two peers involved. Sign in to see yours."
+                    action={
+                        <Link href="/auth">
+                            <Button className="shadow-neo-sm active-sink-sm px-6 text-sm font-bold">Sign in</Button>
+                        </Link>
+                    }
+                />
+            </div>
+        );
+    }
 
     if (sessionQuery.isPending) {
         return <SessionDetailSkeleton />;
@@ -43,6 +66,26 @@ export default function SessionDetailContent({ id }: { id: string }) {
 
     if (!session) {
         return null;
+    }
+
+    // Defence in depth: even if a cache entry were ever keyed or seeded incorrectly, never render a
+    // session whose peers don't include the signed-in user.
+    if (session.mentorId !== user?.id && session.learnerId !== user?.id) {
+        return (
+            <div className="bg-background flex min-h-screen w-full items-center justify-center p-6">
+                <EmptyState
+                    className="w-full max-w-md"
+                    emoji="🔒"
+                    title="Session not found"
+                    description="This session isn't one of yours."
+                    action={
+                        <Link href="/sessions">
+                            <Button className="shadow-neo-sm active-sink-sm px-6 text-sm font-bold">Back to sessions</Button>
+                        </Link>
+                    }
+                />
+            </div>
+        );
     }
 
     return <SessionView session={session} viewerId={user?.id} onAcceptOrReject={acceptReject} />;
