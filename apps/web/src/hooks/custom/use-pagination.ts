@@ -13,7 +13,7 @@ export function usePaginatedQuery<T>(queryKey: readonly unknown[], path: string,
         ...options,
         initialPageParam: 1,
         getNextPageParam: ({ nextPage }) => nextPage,
-        queryKey: ["paginated", ...queryKey, params] as unknown as (string | number)[],
+        queryKey: [...queryKey, "paginated", params] as unknown as (string | number)[],
         queryFn: async ({ pageParam: page }) => await requestApi(() => api.get<PaginatedResult<T>>(path, { params: { ...params, page } })),
     });
 

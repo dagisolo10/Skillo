@@ -10,7 +10,7 @@ export const queryKeys = {
         username: (username: string) => [...queryRoots.user, "username", username] as const,
     },
     skill: {
-        paginated: (filter?: Record<string, string | number | boolean | undefined>) => [...queryRoots.skill, "paginated", filter] as const,
+        all: (filter?: Record<string, string | number | boolean | undefined>) => [...queryRoots.skill, filter] as const,
         detail: (id: string) => [...queryRoots.skill, "detail", id] as const,
     },
     session: {

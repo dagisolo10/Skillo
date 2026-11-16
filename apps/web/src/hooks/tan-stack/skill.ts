@@ -8,7 +8,7 @@ import { PaginatedResult } from "@/types/responses";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 export function useGetSkills(pageParam: PaginationParams, options?: TInfiniteQueryOptions<PaginatedResult<SkillDetail>>) {
-    return usePaginatedQuery(queryKeys.skill.paginated(pageParam), "/skill", pageParam, options);
+    return usePaginatedQuery(queryKeys.skill.all(pageParam), "/skill", pageParam, options);
 }
 
 export function useGetSkill(id: string, options?: TQueryOptions<SkillDetail>) {
